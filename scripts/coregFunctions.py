@@ -23,15 +23,7 @@ def prep_msi_image(output_directory,msi_intensities,msi_coords,setting,peaks=Non
             msi_intensities = msi_intensities[peaks]
         pca = PCA(n_components=1)
         reduction = pca.fit_transform(msi_intensities)
-#        plt.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction,s=1)
-#        plt.gca().invert_yaxis()
-#        return(reduction)
-#        fig, ax = plt.subplots()
         ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction,marker='.',s=100)
-#        plt.gcf().set_size_inches(np.round(msi_coords['x'].max()/10),np.round(msi_coords['y'].max()/10))
-#        fig.set_size_pixels(np.round(msi_coords['x'].max()/10),np.round(msi_coords['y'].max()/10))
-#        plt.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction,s=1)
-#        plt.savefig(output_directory + '/MSI_image.png')
 
     if setting == 'PCA_3':
         from sklearn.decomposition import PCA
@@ -43,20 +35,12 @@ def prep_msi_image(output_directory,msi_intensities,msi_coords,setting,peaks=Non
         scaler = MinMaxScaler()
         reduction_scaled = pd.DataFrame(scaler.fit_transform(reduction), columns=reduction.columns)
         reduction_colours = reduction_scaled.values.tolist()
-#        reduction_colours = list(reduction_scaled.itertuples(index=False, name=None))
         ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction_colours,marker='s',s=200)
-#        plt.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction_colours,s=1)
-#        plt.gca().invert_yaxis()
-#        return(reduction_colours)
     
     elif setting == 'OnePeak':
         ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=msi_intensities[peaks[0]],marker='.')
-#        plt.scatter(x=msi_coords['x'], y=msi_coords['y'], c=msi_intensities[peaks[0]],s=1)
-#        plt.gca().invert_yaxis()
-#        return(msi_intensities[peaks[0]])
         
     ax.set_axis_off()
-#    fig.set_size_inches(np.round(msi_coords['x'].max()/100),np.round(msi_coords['y'].max()/100))
     print(10*msi_coords['y'].max()/msi_coords['x'].max())
     fig.set_size_inches(10,10*(msi_coords['y'].max()/msi_coords['x'].max()))
     fig.savefig(output_directory + '/MSI_image.png', bbox_inches='tight', pad_inches=0)   # save the figure to file
@@ -79,9 +63,6 @@ def get_landmarks(visium_img, msi_img, num_landmarks: int):
         The landmark coordinates between both images.
     
     """
-#    he_img = skimage.io.imread(he_path)
- #   if_img = skimage.io.imread(if_path)
-#    if_img = if_path
     
     visium_coords = np.ones((num_landmarks, 2))
     msi_coords = np.ones((num_landmarks, 2))
@@ -154,14 +135,12 @@ def do_full_mapping_frominputs(output_directory: Path,
     print(round(msi_coords['x'].max()))
     print(round(msi_coords['x'].max()))
     
-#    msi_image_scaled = cv2.resize(msi_image,(round(msi_coords['x'].max()), round(msi_coords['y'].max())))
     ratio = round(msi_coords['y'].max())/round(msi_coords['x'].max())
     print(round(1000*ratio))
     msi_image_scaled = cv2.resize(msi_image,(1000, round(1000*ratio)))
     msi_coords['x'] = msi_coords['x'].transform(lambda x: ((1000/x.max())*x))
     msi_coords['y'] = msi_coords['y'].transform(lambda x: ((1000*ratio/x.max())*x))
     plt.imshow(msi_image_scaled)
-#    msi_image_scaled = cv2.resize(msi_image,(100, 100*(round(msi_coords['y'].max())/round(msi_coords['x'].max()))))
     
     # If we have MSI H&E then do that alignment first
     if msi_he_image != None:
@@ -182,7 +161,6 @@ def do_full_mapping_frominputs(output_directory: Path,
                                   'MSI_original_coordinate_y':msi_coords['y'],
                                   'MSI_new_coordinate_x':new_coords_msi[0],
                                   'MSI_new_coordinate_y':new_coords_msi[1]})
-            #msi_coords['y'] = msi_coords['y'].transform(lambda x: (x.max() - x))
         
     else:
             msi_image = msi_image_scaled
@@ -196,8 +174,6 @@ def do_full_mapping_frominputs(output_directory: Path,
         
 
     landmarks_msi_he_visium_he = get_landmarks(visium_he_img, msi_image, num_landmarks)
-#    tfm_visium = ProjectiveTransform()
-    #tfm_visium = SimilarityTransform()
     tfm_visium = transform()
     tfm_visium.estimate(landmarks_msi_he_visium_he.iloc[:,2:4],landmarks_msi_he_visium_he.iloc[:,:2])
     new_new_coords_msi = pd.DataFrame(matrix_transform(
@@ -213,12 +189,10 @@ def do_full_mapping_frominputs(output_directory: Path,
                           'MSI_new_coordinate_x':new_new_coords_msi[0],
                           'MSI_new_coordinate_y':new_new_coords_msi[1]})
     rows, cols = visium_he_img.shape[:2]
-    #tfm_visium = TpsTransform()
     tfm_visium = transform()
     tfm_visium.estimate(landmarks_msi_he_visium_he.iloc[:,:2],landmarks_msi_he_visium_he.iloc[:,2:4])
     if msi_he_image != None:
         out_he_image =warp(msi_he_img, tfm_visium,output_shape=(rows,cols))
-#        iio.imwrite(uri=output_directory+"data/warped_MSI_he.png", image=out_he_image)
     else: 
         out_he_image =warp(msi_image, tfm_visium,output_shape=(rows,cols))
 
@@ -234,26 +208,15 @@ def do_full_mapping_frominputs(output_directory: Path,
                               'MSI_middle_coordinate_y':msi_table['MSI_middle_coordinate_y'],
                               'MSI_new_coordinate_x':trans_coord[0],
                               'MSI_new_coordinate_y':trans_coord[1]})
-    #    if msi_he_image != None:
-#    out_he_image_tps =tps_warp( msi_he_img, landmarks_msi_he_visium_he.iloc[:,2:4].to_numpy(),landmarks_msi_he_visium_he.iloc[:,:2].to_numpy(),output_region=(0,0,visium_he_img.shape[0],visium_he_img.shape[1]))
-#        iio.imwrite(uri=output_directory+"data/warped_MSI_he.png", image=out_he_image)
-#    else: 
-#        out_he_image_tps =tps_warp(msi_image, landmarks_msi_he_visium_he.iloc[:,:2],landmarks_msi_he_visium_he.iloc[:,2:4],output_region=(0,0,rows,cols))
-
     tps = TpsTransform()
     tps.estimate(landmarks_msi_he_visium_he.iloc[:,:2].to_numpy(),landmarks_msi_he_visium_he.iloc[:,2:4].to_numpy())
     
-#    trans_image = warp(msi_he_img,tps,output_shape=(rows,cols))
     if msi_he_image != None:
         out_he_image_tps = warp(msi_he_img,tps,output_shape=(rows,cols))
-#        iio.imwrite(uri=output_directory+"data/warped_MSI_he.png", image=out_he_image)
     else: 
         out_he_image_tps = warp(msi_image,tps,output_shape=(rows,cols))
 
-#        imsave(uri=output_directory+"data/warped_MSI.png", image=out_he_image)
-#   plt.scatter(x=msi_table['MSI_new_coordinate_x'], y=msi_table['MSI_new_coordinate_y'], c='g', s=1,alpha=0.2)
     return((msi_table,landmarks_msi_he_visium_he,out_he_image,visium_obj,tps_coords,out_he_image_tps,landmarks_msi_he_msi))
-#    return((msi_table,landmarks_msi_he_visium_he,out_he_image,visium_obj,out_he_image_tps))
 
 import os
 import json
@@ -322,21 +285,6 @@ def create_mock_spaceranger(
 
     # Add "in_tissue" column
     msi_coords["in_tissue"] = 1
-    #print(msi_coords.columns)
-    # Select and rename relevant columns
-
-    #print(msi_coord_original_colnames + msi_coord_new_colnames)
-    #print(msi_coords.columns)
-#    msi_tissue_pos = msi_coords[
-#        msi_coord_original_colnames + msi_coord_new_colnames
-#    ].rename(
-#        columns={
-#            msi_coord_original_colnames[0]: "array_row",
-#            msi_coord_original_colnames[1]: "array_col",
-#            msi_coord_new_colnames[0]: "pxl_row_in_fullres",
-#            msi_coord_new_colnames[1]: "pxl_col_in_fullres",
-#        }
-#    )
 
     msi_tissue_pos = msi_coords.rename(
     columns={
@@ -353,7 +301,6 @@ def create_mock_spaceranger(
 
     msi_tissue_pos = msi_tissue_pos[['barcode','in_tissue','array_row','array_col','pxl_row_in_fullres','pxl_col_in_fullres']]
     # Write tissue_positions.csv
-    #msi_tissue_pos.to_csv(os.path.join(spatial_path, "tissue_positions.csv"),index=False,header=False)
     msi_tissue_pos.to_csv(os.path.join(spatial_path, "tissue_positions_list.csv"),index=False,header=False)
     if verbose:
         print(f"The new MSI coordinate file has been saved, containing {len(msi_tissue_pos)} spots/pixels.")
@@ -491,14 +438,10 @@ def group_msi_perspot(msi_obj,visium_allcoords,visium_index):
     from scipy.spatial import distance_matrix
     min_distance = estimate_interspot_distance(visium_allcoords)
     spot_distances = pd.DataFrame(distance_matrix(visium_allcoords,msi_obj.obsm['spatial']),index=visium_index,columns=msi_obj.obs.index)
-#    spot_distances.reset_index(inplace=True)
     spot_distances['visium_spot']=spot_distances.index
     spot_distances_long = pd.wide_to_long(spot_distances, i="visium_spot",stubnames='MSI_',j='MSI_spot')
     spot_distances_long.columns = ['distance']
-#    spot_distances_long[spot_distances_long['distance'] < min_distance].reset_index().groupby(['visium_spot']).size().reset_index().groupby([0]).count()
     close_points = spot_distances_long[spot_distances_long['distance'] < min_distance].reset_index()
-#    close_points['unique_entry'] = close_points.groupby(['visium_spot']).ngroup()
-#    print(close_points['unique_entry'].drop_duplicates())
     close_points['MSI_spot'] = ['MSI_'+str(spot_id) for spot_id in close_points['MSI_spot']]
     return(close_points)
 
