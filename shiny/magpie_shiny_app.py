@@ -138,6 +138,14 @@ def server(input, output, session):
     @reactive.calc
     @reactive.event(input.run_dimred)
     def msi_dimred():
+
+        clicked_coords_noHE_left.set([])
+        clicked_coords_noHE_right.set([])
+        clicked_coords_MSI2HE_left.set([])
+        clicked_coords_MSI2HE_right.set([])
+        clicked_coords_HE2HE_left.set([])
+        clicked_coords_HE2HE_right.set([])
+        
         table = read_inputtable()
         msi_intensities = dimred_options()
         msi_coords = pd.read_csv(table['MSI_coords'][int(input.pick_sample())],index_col=0)
