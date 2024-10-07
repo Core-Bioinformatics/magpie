@@ -30,23 +30,24 @@ app_ui = ui.page_fluid(
     ui.input_slider("point_size","Select size of point",1,300,100),
     ui.input_action_button("run_dimred", "Run dimensionality reduction"),
     # Show dim reduction
-    ui.output_plot("msi_dimred_output"),
     ui.output_text("middleHE"),
     # Pick landmarks between MSI and Visium H&E (if no MSI H&E)
     ui.panel_conditional("output.middleHE=='No MSI H&E image detected'",
                          ui.h3("Select landmarks between MSI data and Visium H&E"),
                          ui.layout_columns(
-                            ui.card(ui.output_plot("plot_noHE_left", click=True),full_screen=True,height="400px"),  # Enable click on plot
-                            ui.card(ui.output_plot("plot_noHE_right", click=True),full_screen=True,height="400px")),
+                            ui.card(ui.output_plot("plot_noHE_left", click=True)),  # Enable click on plot
+                            ui.card(ui.output_plot("plot_noHE_right", click=True)),
+                            row_heights="500px"),
                         ui.layout_columns(
                             ui.card(
                                 ui.panel_conditional(
                                     "input.plot_noHE_left_click", 
-                                    ui.output_plot("plot_noHE_withselected_left", click=False)),full_screen=True,height="400px"),
+                                    ui.output_plot("plot_noHE_withselected_left", click=False))),
                             ui.card(
                                 ui.panel_conditional(
                                     "input.plot_noHE_right_click", 
-                                    ui.output_plot("plot_noHE_withselected_right", click=False)),full_screen=True,height="400px")),
+                                    ui.output_plot("plot_noHE_withselected_right", click=False))),
+                            row_heights="500px"),
                         ui.h4("Recorded Landmarks"),
                         ui.output_table("coords_noHE"),
                         ui.input_action_button("download_noHE", "Download landmarks"),
@@ -58,7 +59,8 @@ app_ui = ui.page_fluid(
                         ui.h3("Select landmarks between MSI data and MSI H&E"),
                         ui.layout_columns(
                             ui.card(ui.output_plot("plot_MSI2HE_left", click=True)),  # Enable click on plot
-                            ui.card(ui.output_plot("plot_MSI2HE_right", click=True))),
+                            ui.card(ui.output_plot("plot_MSI2HE_right", click=True)),
+                            row_heights="500px"),
                         ui.layout_columns(
                             ui.card(
                                 ui.panel_conditional(
@@ -67,7 +69,8 @@ app_ui = ui.page_fluid(
                             ui.card(
                                 ui.panel_conditional(
                                     "input.plot_MSI2HE_right_click", 
-                                    ui.output_plot("plot_MSI2HE_withselected_right", click=False)))),
+                                    ui.output_plot("plot_MSI2HE_withselected_right", click=False))),
+                            row_heights="500px"),
                         ui.h4("Recorded Landmarks"),
                         ui.output_table("coords_MSI2HE"),
                         ui.input_action_button("download_MSI2HE", "Download landmarks"),
@@ -77,7 +80,8 @@ app_ui = ui.page_fluid(
                         ui.h2("Select landmarks between MSI H&E and Visium H&E"),
                          ui.layout_columns(
                             ui.card(ui.output_plot("plot_HE2HE_left", click=True)),  # Enable click on plot
-                            ui.card(ui.output_plot("plot_HE2HE_right", click=True))),
+                            ui.card(ui.output_plot("plot_HE2HE_right", click=True)),
+                            row_heights="500px"),
                         ui.layout_columns(
                             ui.card(
                                 ui.panel_conditional(
@@ -86,7 +90,8 @@ app_ui = ui.page_fluid(
                             ui.card(
                                 ui.panel_conditional(
                                     "input.plot_HE2HE_right_click", 
-                                    ui.output_plot("plot_HE2HE_withselected_right", click=False)))),
+                                    ui.output_plot("plot_HE2HE_withselected_right", click=False))),
+                            row_heights="500px"),
                         ui.h4("Recorded Landmarks"),
                         ui.output_table("coords_HE2HE"),
                         ui.input_action_button("download_HE2HE", "Download landmarks"),
@@ -158,7 +163,7 @@ def server(input, output, session):
         
         msi_intensities = dimred_options()
         msi_coords = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_metadata.csv',index_col=0)
-        fig, ax = plt.subplots(nrows=1, ncols=1)  # create figure & 1 axis
+        fig, ax = plt.subplots(nrows=1, ncols=1,dpi=100)  # create figure & 1 axis
         ax.margins(x=0,y=0)
         if input.msi_colouring() == 'PC1':
             from sklearn.decomposition import PCA
@@ -186,79 +191,73 @@ def server(input, output, session):
         fig.gca().set_aspect('equal')
         ax.set_title('MSI Image')
         ax.set_rasterization_zorder(0)
-        plt.tight_layout()
-        print('Im recalculating')
+        fig.tight_layout()
         return (fig,ax)
-
-    # Show dimensionality reduction
-    @output
-    @render.plot
-    def msi_dimred_output():
-        fig,axs = msi_dimred()
-        plt.tight_layout()
-        return fig
 
     # All elements for picking landmarks between MSI and Visium H&E -------------------------
 
     # Show dim red and capture clicks
     @output
-    @render.plot
+    @render.plot(height=450)
     def plot_noHE_left():
         # Load the images
-        fig,axs = msi_dimred()
-        plt.tight_layout()
+        fig,ax = msi_dimred()
+        fig.tight_layout()
+        fig.set_dpi(100)
         return fig
     
     # Show Visium H&E and capture clicks
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.pick_sample)
     def plot_noHE_right():
         # Create the figure and axes
-        fig, axs = plt.subplots(1, 1)
+        fig, ax = plt.subplots(1, 1)
         # Load the images
         msi_he = imread('input/'+input.pick_sample()+'/visium/spatial/tissue_hires_image.png')
         
         # Display the images in two subplots
-        axs.imshow(msi_he)
-        axs.set_title('Visium HE Image')
+        ax.imshow(msi_he)
+        ax.set_title('Visium HE Image')
 
         # Tight layout for clean display
-        plt.tight_layout()
+        fig.tight_layout()
         return fig
 
     # Show dim red with clicked landmarks
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.plot_noHE_left_click,input.undo_noHE_left_click)
     def plot_noHE_withselected_left():
         # Create the figure and axes
-        fig, axs = msi_dimred()
+        fig, ax = msi_dimred()
 #        # Get the list of clicked coordinates
         current_coords_left = clicked_coords_noHE_left.get()
         if current_coords_left:
             if len(current_coords_left)>0:
                 x_vals, y_vals = zip(*current_coords_left)  # Unpack the coordinates
                 for i in range(len(current_coords_left)):
-                    axs.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
-                    axs.text(x_vals[i], y_vals[i], str(i),   color='red',fontsize=9)
+                    ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
+                    ax.text(x_vals[i], y_vals[i], str(i),   color='red',fontsize=9)
+        fig.tight_layout()
+        fig.set_dpi(100)
         # Tight layout for clean display
         return fig
     
     # Show Visium H&E with clicked landmarks
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.plot_noHE_right_click,input.undo_noHE_right_click)
     def plot_noHE_withselected_right():
         # Create the figure and axes
-        fig, axs = plt.subplots(1, 1, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         
         # Load the images
         msi_he = imread('input/'+input.pick_sample()+'/visium/spatial/tissue_hires_image.png')
        
         # Display the images in two subplots
-        axs.imshow(msi_he)
-        axs.set_title('Visium H&E Image')
+        ax.imshow(msi_he)
+        ax.set_title('Visium H&E Image')
 
         # Get the list of clicked coordinates
         current_coords_right = clicked_coords_noHE_right.get()
@@ -266,10 +265,10 @@ def server(input, output, session):
             if len(current_coords_right)>0:
                 x_vals, y_vals = zip(*current_coords_right)  # Unpack the coordinates
                 for i in range(len(current_coords_right)):
-                    axs.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
-                    axs.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
+                    ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
+                    ax.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
         # Tight layout for clean display
-        plt.tight_layout()
+        fig.tight_layout()
         return fig
 
     # Update clicked points
@@ -351,38 +350,40 @@ def server(input, output, session):
 
     # Show dim red 
     @output
-    @render.plot
+    @render.plot(height=450)
     def plot_MSI2HE_left():
         # Plot dim
-        fig,axs = msi_dimred()
+        fig,ax = msi_dimred()
+        fig.tight_layout()
+        fig.set_dpi(100)
         return fig
     
     # Show MSI H&E
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.pick_sample)
     def plot_MSI2HE_right():
         # Create the figure and axes
-        fig, axs = plt.subplots(1, 1, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
         msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
         
         # Display the images in two subplots
-        axs.imshow(msi_he)
-        axs.set_title('MSI HE Image')
+        ax.imshow(msi_he)
+        ax.set_title('MSI HE Image')
 
         # Tight layout for clean display
-        plt.tight_layout()
+        fig.tight_layout()
         return fig
 
     # Show dim red with clicked points
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.plot_MSI2HE_left_click,input.undo_MSI2HE_left_click)
     def plot_MSI2HE_withselected_left():
         # Create the figure and axes
 
-        fig, axs = msi_dimred()
+        fig, ax = msi_dimred()
 
         # Get the list of clicked coordinates
         current_coords_left = clicked_coords_MSI2HE_left()
@@ -390,28 +391,29 @@ def server(input, output, session):
             if len(current_coords_left)>0:
                 x_vals, y_vals = zip(*current_coords_left)  # Unpack the coordinates
                 for i in range(len(current_coords_left)):
-                    axs.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
-                    axs.text(x_vals[i], y_vals[i], str(i),   color='red',fontsize=9)
+                    ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
+                    ax.text(x_vals[i], y_vals[i], str(i),   color='red',fontsize=9)
 
         # Tight layout for clean display
         fig.tight_layout()
+        fig.set_dpi(100)
         return fig
     
     # Show MSI H&E with clicked points
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.plot_MSI2HE_right_click,input.undo_MSI2HE_right_click)
     def plot_MSI2HE_withselected_right():
         # Create the figure and axes
-        fig, axs = plt.subplots(1, 1, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         
         # Load the images
 
         msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
        
         # Display the images in two subplots
-        axs.imshow(msi_he)
-        axs.set_title('MSI H&E Image')
+        ax.imshow(msi_he)
+        ax.set_title('MSI H&E Image')
 
         # Get the list of clicked coordinates
         current_coords_right = clicked_coords_MSI2HE_right()
@@ -419,10 +421,10 @@ def server(input, output, session):
             if len(current_coords_right)>0:
                 x_vals, y_vals = zip(*current_coords_right)  # Unpack the coordinates
                 for i in range(len(current_coords_right)):
-                    axs.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
-                    axs.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
+                    ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
+                    ax.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
         # Tight layout for clean display
-        plt.tight_layout()
+        fig.tight_layout()
         return fig
 
     # Update clicked points 
@@ -508,55 +510,55 @@ def server(input, output, session):
 
     # Show MSI H&E
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.pick_sample)
     def plot_HE2HE_left():
         # Load the images
        # Create the figure and axes
-        fig, axs = plt.subplots(1, 1, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
         msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
         
         # Display the images in two subplots
-        axs.imshow(msi_he)
-        axs.set_title('MSI HE Image')
+        ax.imshow(msi_he)
+        ax.set_title('MSI HE Image')
 
         # Tight layout for clean display
-        plt.tight_layout()
+        fig.tight_layout()
         return fig
     
     # Show Visium H&E
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.pick_sample)
     def plot_HE2HE_right():
         # Create the figure and axes
-        fig, axs = plt.subplots(1, 1, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
         msi_he = imread('input/'+input.pick_sample()+'/visium/spatial/tissue_hires_image.png')
         
         # Display the images in two subplots
-        axs.imshow(msi_he)
-        axs.set_title('Visium HE Image')
+        ax.imshow(msi_he)
+        ax.set_title('Visium HE Image')
 
         # Tight layout for clean display
-        plt.tight_layout()
+        fig.tight_layout()
         return fig
 
     # Show MSI H&E with clicked points
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.plot_HE2HE_left_click,input.undo_HE2HE_left_click)
     def plot_HE2HE_withselected_left():
         # Create the figure and axes
-        fig, axs = plt.subplots(1, 1, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         
         # Load the images
         msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
        
         # Display the images in two subplots
-        axs.imshow(msi_he)
-        axs.set_title('MSI H&E Image')
+        ax.imshow(msi_he)
+        ax.set_title('MSI H&E Image')
 
         # Get the list of clicked coordinates
         current_coords_left = clicked_coords_HE2HE_left()
@@ -564,26 +566,26 @@ def server(input, output, session):
             if len(current_coords_left)>0:
                 x_vals, y_vals = zip(*current_coords_left)  # Unpack the coordinates
                 for i in range(len(current_coords_left)):
-                    axs.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
-                    axs.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
+                    ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
+                    ax.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
         # Tight layout for clean display
-        plt.tight_layout()
+        fig.tight_layout()
         return fig
     
     # Show Visium H&E with clicked points
     @output
-    @render.plot
+    @render.plot(height=450)
     @reactive.event(input.plot_HE2HE_right_click,input.undo_HE2HE_right_click)
     def plot_HE2HE_withselected_right():
         # Create the figure and axes
-        fig, axs = plt.subplots(1, 1, figsize=(10, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         
         # Load the images
         visium_he = imread('input/'+input.pick_sample()+'/visium/spatial/tissue_hires_image.png')
        
         # Display the images in two subplots
-        axs.imshow(visium_he)
-        axs.set_title('Visium H&E Image')
+        ax.imshow(visium_he)
+        ax.set_title('Visium H&E Image')
 
         # Get the list of clicked coordinates
         current_coords_right = clicked_coords_HE2HE_right()
@@ -591,10 +593,10 @@ def server(input, output, session):
             if len(current_coords_right)>0:
                 x_vals, y_vals = zip(*current_coords_right)  # Unpack the coordinates
                 for i in range(len(current_coords_right)):
-                    axs.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
-                    axs.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
+                    ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
+                    ax.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
         # Tight layout for clean display
-        plt.tight_layout()
+        fig.tight_layout()
         return fig
 
     # Update clicked points
