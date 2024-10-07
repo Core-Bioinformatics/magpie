@@ -43,25 +43,7 @@ def create_mean_intensity_table(msi_obj,visium_allcoords,visium_index):
     intensity_matrix = close_points.merge(msi_data,left_index=True,right_index=True)
     def group_mean(group):
         return np.mean(group, axis=0)
-    import time
-    start_time = time.time()
     intensity_matrix_mean = intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1).groupby(['visium_spot']).apply(lambda x: group_mean(x.values))
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Elapsed time: {elapsed_time:.4f} seconds")
-
-    start_time = time.time()
-    intensity_matrix_mean = intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1).groupby(['visium_spot']).mean()
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Elapsed time: {elapsed_time:.4f} seconds")
-
-    start_time = time.time()
-    intensity_matrix_mean = pd.pivot_table(intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1), index='visium_spot', aggfunc='mean')
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Elapsed time: {elapsed_time:.4f} seconds")
-
     return(intensity_matrix_mean)
 
 def create_mock_spaceranger_mean_intensity(
