@@ -1,5 +1,3 @@
-print(expand("output/{sample}/transformed.csv", sample=glob_wildcards("input/{sample}/msi").sample))
-
 rule all:
     input:
         expand("output/{sample}/spaceranger_meanIntensity/filtered_feature_bc_matrix.h5", sample=glob_wildcards("input/{sample}/msi").sample)
