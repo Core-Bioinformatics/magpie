@@ -2,7 +2,7 @@ import os
 import json
 from collections import namedtuple
 from scipy.spatial.distance import pdist
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, coo_array
 import pandas as pd
 import shutil
 from scipy.io import mmwrite
@@ -14,8 +14,6 @@ def create_mock_spaceranger(
     output_folder_name="mock_spaceranger",
     msi_image_path="msi_he.png",
     msi_coord_fname="msi_coords.csv",
-    msi_coord_original_colnames=("MSI_original_coordinate_x", "MSI_original_coordinate_y"),
-    msi_coord_new_colnames=("MSI_new_coordinate_y", "MSI_new_coordinate_x"),
     msi_spot_prefix="MSI", 
     msi_feat_prefix="mz",
     visium_sf_json_path=None,
@@ -26,16 +24,13 @@ def create_mock_spaceranger(
     Creates mock Space Ranger formatted output data for a sample.
 
     Args:
-        input_dir (str): Path to the input directory.
         output_folder_name (str, optional): Name of the output folder. Defaults to "mock_spaceranger".
         msi_image_path (str, optional): Path to the MSI image file. Defaults to "msi_he.png".
         msi_coord_fname (str, optional): Name of the MSI coordinate file. Defaults to "msi_coords.csv".
-        msi_coord_original_colnames (tuple, optional): Column names in the MSI coordinate file with original coordinates. Defaults to ("MSI_original_coordinate_x", "MSI_original_coordinate_y").
-        msi_coord_new_colnames (tuple, optional): Column names in the MSI coordinate file with new coordinates. Defaults to ("MSI_new_coordinate_y", "MSI_new_coordinate_x").
         msi_spot_prefix (str, optional): Prefix for spot IDs in the MSI data. Defaults to "MSI".
         msi_feat_prefix (str, optional): Prefix for feature IDs in the MSI data. Defaults to "mz".
-        visium_sf_json_path (str, optional): Path to the Visium scalefactor JSON file (optional).
-        msi_peak_data_path (str, optional): Path to the MSI peak data file (optional).
+        visium_sf_json_path (str): Path to the Visium scalefactor JSON file.
+        msi_peak_data_path (str, optional): Path to the MSI peak data file.
         verbose (bool, optional): Print informational messages during execution. Defaults to True.
 
     Returns:
@@ -50,18 +45,11 @@ def create_mock_spaceranger(
     filtered_path = os.path.join(output_path, "filtered_feature_bc_matrix")
     os.makedirs(filtered_path, exist_ok=True)
 
-    # Load matching Visium scalefactor JSON file (if provided)
-    if visium_sf_json_path:
-        with open(visium_sf_json_path, "r") as f:
-            st_json = json.load(f)
-        scale_factor = st_json['tissue_hires_scalef']
-        msi_json = st_json
-
-    # Define namedtuple for tissue positions
-    TissuePosition = namedtuple(
-        "TissuePosition",
-        ["barcode", "in_tissue", "array_row", "array_col", "pxl_row_in_fullres", "pxl_col_in_fullres"],
-    )
+    # Load matching Visium scalefactor JSON file
+    with open(visium_sf_json_path, "r") as f:
+        st_json = json.load(f)
+    scale_factor = st_json['tissue_hires_scalef']
+    msi_json = st_json
 
     # Read MSI coordinates
     if verbose:
@@ -95,12 +83,11 @@ def create_mock_spaceranger(
         print(f"The new MSI coordinate file has been saved, containing {len(msi_tissue_pos)} spots/pixels.")
 
     # Update spot diameter based on MSI center-to-center distance
-    if msi_peak_data_path:  # Only calculate diameter if peak data is provided
-        # Assuming pxl_row_in_fullres and pxl_col_in_fullres are spatial coordinates
-        distances = pdist(msi_tissue_pos[["pxl_row_in_fullres", "pxl_col_in_fullres"]])
-        c_c_dist = distances[distances > 0].min()
-        msi_json["spot_diameter_fullres"] = c_c_dist
-        msi_json["fiducial_diameter_fullres"] = 0
+    # Assuming pxl_row_in_fullres and pxl_col_in_fullres are spatial coordinates
+    distances = pdist(msi_tissue_pos[["pxl_row_in_fullres", "pxl_col_in_fullres"]])
+    c_c_dist = distances[distances > 0].min()
+    msi_json["spot_diameter_fullres"] = c_c_dist
+    msi_json["fiducial_diameter_fullres"] = 0
 
     # Write new scale factor JSON (if data available)
     if (msi_peak_data_path and visium_sf_json_path) or msi_json:
@@ -133,8 +120,6 @@ def create_mock_spaceranger(
     # Create barcode IDs
     msi_peaks_barcodes = msi_spot_prefix + "_" + msi_coords.index.astype(str)
 
-    #msi_peaks_barcodes = msi_spot_prefix + "_" + msi_peaks["Unnamed: 0"].astype(str)
-
     # Prepare MSI peak data matrix
     if verbose:
         print("Preparing MSI peak data...")
@@ -145,7 +130,6 @@ def create_mock_spaceranger(
 
     # Convert to sparse matrix (optional)
     # You might need to install `scikit-learn` for sparse matrix functionality
-#    from sklearn.preprocessing import csr_matrix
     msi_peaks_mtx = csr_matrix(msi_peaks_matrix)
 
     # Write output files
@@ -173,17 +157,13 @@ def create_mock_spaceranger(
     with open(os.path.join(filtered_path, "matrix.mtx"), 'rb') as src, gzip.open(os.path.join(filtered_path, "matrix.mtx.gz"), 'wb') as dst:
         dst.writelines(src)
 
-    # Gzip compression can be done using external libraries like `shutil`
-#    from shutil import make_archive
-#    make_archive(os.path.join(filtered_path, "matrix.mtx"),"gz")
-
     if verbose:
         print("Spaceranger 'filtered_feature_bc_matrix' folder content ready!")
 
     if verbose:
         print("Writing filtered_feature_bc_matrix.h5 file...")
 
-    from scipy.sparse import coo_array
+    # create h5 object
     msi_peaks_mtx_csr = msi_peaks_mtx.tocoo()
     msi_peaks_mtx_csr = coo_array((msi_peaks_mtx_csr.data, (msi_peaks_mtx_csr.col, msi_peaks_mtx_csr.row)), shape=(msi_peaks_mtx_csr.shape[1],msi_peaks_mtx_csr.shape[0])).tocsr()
     hf = h5py.File(os.path.join(output_path, "filtered_feature_bc_matrix.h5"), 'w')

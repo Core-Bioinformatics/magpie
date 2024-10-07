@@ -2,21 +2,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from skimage.io import imread, imsave
 from skimage.color import rgb2gray
-from TPS import *
 import os.path
 import sys
+from skimage.transform import (  
+    AffineTransform,
+    matrix_transform,
+    warp)
+from TPS import *
 
-# Snakemake automatically passes input and output files via 'snakemake.input' and 'snakemake.output'
-#input_file = snakemake.input[0]
-
+# Identify transform needed to map from MSI dim reduction to Visium H&E and apply it
 def map_coords_noHE(file,transform):
-    from skimage.transform import (  # pylint: disable=no-name-in-module
-        AffineTransform,
-        matrix_transform)
-    """Alter the DataFrame as needed"""
-    # Example alteration: Add a new column with doubled values of 'Some_Column'
+
+    # read landmark and MSI coordinate files
     landmarks = pd.read_csv(file+'/landmarks_noHE.csv',index_col=0)
     msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv')
+
+    # apply affine or TPS transform to coordinates
     if (transform=='affine'):
         tfm = AffineTransform()
         tfm.estimate(landmarks.iloc[:,:2],landmarks.iloc[:,2:4])
@@ -30,16 +31,14 @@ def map_coords_noHE(file,transform):
 
     return {'transformed_coords':msi_coords_tfm,'msi_he_image':None}
 
+# Identify transform needed to map from MSI dim reduction to MSI H&E and apply it
 def map_coords_MSI2HE(file,transform):
-    from skimage.transform import (  # pylint: disable=no-name-in-module
-        AffineTransform,
-        matrix_transform,
-        warp)
-    """Alter the DataFrame as needed"""
-    # Example alteration: Add a new column with doubled values of 'Some_Column'
 
+    # read landmark and MSI coordinate files
     landmarks = pd.read_csv(file+'/landmarks_MSI2HE.csv',index_col=0)
     msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv')
+
+    # apply affine or TPS transform to coordinates
     if (transform=='affine'):
         tfm = AffineTransform()
         tfm.estimate(landmarks.iloc[:,:2],landmarks.iloc[:,2:4])
@@ -54,17 +53,13 @@ def map_coords_MSI2HE(file,transform):
     return msi_coords_tfm
 
 def map_coords_HE2HE(file,msi_coords,transform):
-    from skimage.transform import (  # pylint: disable=no-name-in-module
-        AffineTransform,
-        matrix_transform,
-        warp)
-    """Alter the DataFrame as needed"""
-    # Example alteration: Add a new column with doubled values of 'Some_Column'
-
+    # read landmark and MSI coordinate files as well as Visium H&E (for shape to transform MSI H&E)
     visium_he_img = imread(file+'/visium/spatial/tissue_hires_image.png')
     msi_he_img = imread(file+'/msi/MSI_HE.jpg')
     landmarks = pd.read_csv(file+'/landmarks_HE2HE.csv',index_col=0)
     rows, cols = visium_he_img.shape[:2]
+
+    # apply affine or TPS transform to coordinates and MSI H&E
     if (transform=='affine'):
         tfm = AffineTransform()
         tfm.estimate(landmarks.iloc[:,:2],landmarks.iloc[:,2:4])
@@ -82,24 +77,33 @@ def map_coords_HE2HE(file,msi_coords,transform):
         tfm.estimate((landmarks.iloc[:,2:4]).to_numpy(),(landmarks.iloc[:,:2]).to_numpy())
 
     transformed_image = warp(msi_he_img, tfm,output_shape=(rows,cols))
+
+    # return both the transformed coordinates and transformed H&E image
     return {'transformed_coords':msi_coords_tfm,'msi_he_image':transformed_image}
 
+# check whether there is an MSI H&E image and use the transformation pipeline depending on result
 def apply_mapping(file):
+
     if os.path.isfile(file+'/msi/MSI_HE.jpg'):
         intermediate_coords = map_coords_MSI2HE(file,'affine')
         return(map_coords_HE2HE(file,intermediate_coords,snakemake.params['transform_type']))
     else:
         return(map_coords_noHE(file,snakemake.params['transform_type']))
-    
+
+# run full coregistration pipeline on selected sample
 def run_coreg(sample):
+
+    # get new MSI coordinates and image
     transformed_result = apply_mapping('input/'+sample)
     transformed_coords = transformed_result['transformed_coords']
     msi_he_image = transformed_result['msi_he_image']
-    visium_he_img = imread('input/'+sample+'/visium/spatial/tissue_hires_image.png')
+
+    # plot points on top of Visium
     fig, ax = plt.subplots(nrows=1, ncols=1 )
     if os.path.isfile('input/'+sample+'/msi/MSI_HE.jpg'):
         out_image = msi_he_image
     else:
+        visium_he_img = imread('input/'+sample+'/visium/spatial/tissue_hires_image.png')
         out_image = visium_he_img
     plt.imsave(arr=out_image,fname='output/'+sample+'/transformed.png')
     plt.imshow(out_image)
