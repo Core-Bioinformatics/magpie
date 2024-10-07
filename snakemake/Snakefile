@@ -1,0 +1,39 @@
+print(expand("output/{sample}/transformed.csv", sample=glob_wildcards("input/{sample}/msi").sample))
+
+rule all:
+    input:
+        expand("output/{sample}/spaceranger_meanIntensity/filtered_feature_bc_matrix.h5", sample=glob_wildcards("input/{sample}/msi").sample)
+        
+rule perform_coreg:
+    input:
+        "input/{sample}/msi/MSI_metadata.csv"
+    output:
+        "output/{sample}/transformed.csv",
+        "output/{sample}/transformed_withCoords.png",
+        "output/{sample}/transformed.png"
+    params:
+        transform_type = 'TPS',
+        sample = "{sample}"
+    script:
+        "scripts/alter_data.py"
+
+rule make_spaceranger:
+    input:
+        "output/{sample}/transformed.csv",
+        "output/{sample}/transformed.png"
+    output:
+        "output/{sample}/spaceranger/filtered_feature_bc_matrix.h5"
+    params:
+        sample = "{sample}"
+    script:
+        "scripts/create_mock_spaceranger.py"
+
+rule create_barcode_matrix:
+    input:
+        "output/{sample}/spaceranger/filtered_feature_bc_matrix.h5"
+    output:
+        "output/{sample}/spaceranger_meanIntensity/filtered_feature_bc_matrix.h5"
+    params:
+        sample = "{sample}"
+    script:
+        "scripts/create_perbarcode_matrix.py"
