@@ -65,8 +65,10 @@ def create_mean_intensity_table(msi_obj,visium_allcoords,visium_index):
 
     # group by Visium spot and take mean for each peak
     intensity_matrix_mean = intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1).groupby(['visium_spot']).apply(lambda x: group_mean(x.values))
+    intensity_matrix_mean_df = pd.DataFrame.from_dict(dict(zip(intensity_matrix_mean.index, intensity_matrix_mean.values))).transpose()
+    intensity_matrix_mean_df.columns = msi_obj.var['gene_ids']
 
-    return(intensity_matrix_mean)
+    return(intensity_matrix_mean_df)
 
 # create spaceranger-style output
 def create_mock_spaceranger_mean_intensity(
