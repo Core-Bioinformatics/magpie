@@ -11,6 +11,7 @@ import h5py
 
 
 def create_mock_spaceranger(
+    sample_name='sample1',
     output_folder_name="mock_spaceranger",
     msi_image_path="msi_he.png",
     msi_coord_fname="msi_coords.csv",
@@ -74,7 +75,7 @@ def create_mock_spaceranger(
     print(msi_tissue_pos)
 
     # Rename "barcodes" so that they are characters
-    msi_tissue_pos["barcode"] = msi_spot_prefix + "_" + msi_tissue_pos["barcode"].astype(str)
+    msi_tissue_pos["barcode"] = msi_spot_prefix + "_" + sample_name + "_" + msi_tissue_pos["barcode"].astype(str)
 
     msi_tissue_pos = msi_tissue_pos[['barcode','in_tissue','array_row','array_col','pxl_row_in_fullres','pxl_col_in_fullres']]
     # Write tissue_positions.csv
@@ -118,7 +119,8 @@ def create_mock_spaceranger(
     msi_peaks_features["id2"] = msi_peaks_features["id1"]
 
     # Create barcode IDs
-    msi_peaks_barcodes = msi_spot_prefix + "_" + msi_coords.index.astype(str)
+    msi_peaks_barcodes = msi_spot_prefix + "_" + sample_name + "_" + msi_coords.index.astype(str)
+    print(msi_peaks_barcodes)
 
     # Prepare MSI peak data matrix
     if verbose:
@@ -192,7 +194,9 @@ def create_mock_spaceranger(
 
 if __name__ == "__main__":
     sample = snakemake.params['sample']
-    create_mock_spaceranger('output/'+sample+'/spaceranger/',
+    create_mock_spaceranger(
+                        sample,
+                        'output/'+sample+'/spaceranger/',
                         snakemake.input[1],
                         snakemake.input[0],
                         visium_sf_json_path = "input/"+sample+"/visium/spatial/scalefactors_json.json",

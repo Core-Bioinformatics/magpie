@@ -27,7 +27,7 @@ def estimate_interspot_distance(data):
     return(min(distances)/2)
 
 # group MSI coordinates which fall within a Visium spot extended radius
-def group_msi_perspot(msi_obj,visium_allcoords,visium_index):
+def group_msi_perspot(msi_obj,visium_allcoords,visium_index,sample_name):
 
     # get minimum distance between spots to find extended Visium radius
     min_distance = estimate_interspot_distance(visium_allcoords)
@@ -37,10 +37,12 @@ def group_msi_perspot(msi_obj,visium_allcoords,visium_index):
     spot_distances['visium_spot']=spot_distances.index
 
     # convert to long format and filter to those within the extended Visium radius
-    spot_distances_long = pd.wide_to_long(spot_distances, i="visium_spot",stubnames='MSI_',j='MSI_spot')
+    spot_distances_long = pd.wide_to_long(spot_distances, i="visium_spot",stubnames='MSI_' + sample_name + "_",j='MSI_spot')
     spot_distances_long.columns = ['distance']
     close_points = spot_distances_long[spot_distances_long['distance'] < min_distance].reset_index()
-    close_points['MSI_spot'] = ['MSI_'+str(spot_id) for spot_id in close_points['MSI_spot']]
+    print(close_points[:5])
+    close_points['MSI_spot'] = ['MSI_'+ sample_name + "_" +str(spot_id) for spot_id in close_points['MSI_spot']]
+    print(close_points[:5])
     return(close_points)
 
 # helper function to get mean for each group
@@ -48,10 +50,10 @@ def group_mean(group):
     return np.mean(group, axis=0)
 
 # combine MSI pixels in one Visium spot and take average
-def create_mean_intensity_table(msi_obj,visium_allcoords,visium_index):
+def create_mean_intensity_table(msi_obj,visium_allcoords,visium_index,sample_name):
 
     # get all points grouped by Visium spot
-    close_points = group_msi_perspot(msi_obj,visium_allcoords,visium_index)
+    close_points = group_msi_perspot(msi_obj,visium_allcoords,visium_index,sample_name)
     msi_data = msi_obj.X
 
     # convert to sparse format
@@ -223,7 +225,7 @@ def main():
     msi_obj = scanpy.read_visium('output/'+sample+'/spaceranger/',library_id='myLib')
     visium_obj = scanpy.read_visium("input/"+sample+"/visium/",library_id='myLib')
     visium_allcoords = pd.read_csv("input/"+sample+'/visium/spatial/tissue_positions_list.csv',header=None,index_col=0).iloc[:,[4,3]]
-    mean_intensity = create_mean_intensity_table(msi_obj,visium_allcoords,visium_allcoords.index)
+    mean_intensity = create_mean_intensity_table(msi_obj,visium_allcoords,visium_allcoords.index,sample)
     create_mock_spaceranger_mean_intensity(mean_intensity,
                                         'output/'+sample+'/spaceranger_meanIntensity/',
                                         'output/'+sample+'/spaceranger/spatial/tissue_hires_image.png',

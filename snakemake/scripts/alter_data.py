@@ -15,7 +15,10 @@ def map_coords_noHE(file,transform):
 
     # read landmark and MSI coordinate files
     landmarks = pd.read_csv(file+'/landmarks_noHE.csv',index_col=0)
-    msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv')
+    if os.path.isfile(file+'/msi/MSI_metadata_modified.csv'):
+        msi_coords = pd.read_csv(file+'/msi/MSI_metadata_modified.csv',index_col=0)
+    else:
+        msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv',index_col=0)
 
     # apply affine or TPS transform to coordinates
     if (transform=='affine'):
@@ -36,7 +39,12 @@ def map_coords_MSI2HE(file,transform):
 
     # read landmark and MSI coordinate files
     landmarks = pd.read_csv(file+'/landmarks_MSI2HE.csv',index_col=0)
-    msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv')
+
+    if os.path.isfile(file+'/msi/MSI_metadata_modified.csv'):
+        msi_coords = pd.read_csv(file+'/msi/MSI_metadata_modified.csv',index_col=0)
+    else:
+        msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv',index_col=0)
+
 
     # apply affine or TPS transform to coordinates
     if (transform=='affine'):
@@ -49,13 +57,17 @@ def map_coords_MSI2HE(file,transform):
         tfm = TpsTransform()
         tfm.estimate((landmarks.iloc[:,:2]).to_numpy(),(landmarks.iloc[:,2:4]).to_numpy())
         msi_coords_tfm = pd.DataFrame(tfm(msi_coords[['x','y']].to_numpy()))
-
+    msi_coords_tfm.index = msi_coords.index
     return msi_coords_tfm
 
 def map_coords_HE2HE(file,msi_coords,transform):
     # read landmark and MSI coordinate files as well as Visium H&E (for shape to transform MSI H&E)
     visium_he_img = imread(file+'/visium/spatial/tissue_hires_image.png')
-    msi_he_img = imread(file+'/msi/MSI_HE.jpg')
+
+    if os.path.isfile(file+'/msi/MSI_HE_modified.jpg'):
+        msi_he_img = imread(file+'/msi/MSI_HE_modified.jpg')
+    else:
+        msi_he_img = imread(file+'/msi/MSI_HE.jpg')
     landmarks = pd.read_csv(file+'/landmarks_HE2HE.csv',index_col=0)
     rows, cols = visium_he_img.shape[:2]
 
@@ -77,7 +89,7 @@ def map_coords_HE2HE(file,msi_coords,transform):
         tfm.estimate((landmarks.iloc[:,2:4]).to_numpy(),(landmarks.iloc[:,:2]).to_numpy())
 
     transformed_image = warp(msi_he_img, tfm,output_shape=(rows,cols))
-
+    msi_coords_tfm.index = msi_coords.index
     # return both the transformed coordinates and transformed H&E image
     return {'transformed_coords':msi_coords_tfm,'msi_he_image':transformed_image}
 
@@ -98,7 +110,7 @@ def run_coreg(sample):
     transformed_coords = transformed_result['transformed_coords']
     msi_he_image = transformed_result['msi_he_image']
 
-    # plot points on top of Visium
+    # save H&E image (either MSI H&E if available or Visium otherwise)
     fig, ax = plt.subplots(nrows=1, ncols=1 )
     if os.path.isfile('input/'+sample+'/msi/MSI_HE.jpg'):
         out_image = msi_he_image
@@ -106,15 +118,18 @@ def run_coreg(sample):
         visium_he_img = imread('input/'+sample+'/visium/spatial/tissue_hires_image.png')
         out_image = visium_he_img
     plt.imsave(arr=out_image,fname='output/'+sample+'/transformed.png')
+
+    # plot coordinates on top of H&E image
     plt.imshow(out_image)
     plt.scatter(x=transformed_coords[0],y=transformed_coords[1],s=0.1,c='r',alpha=1)
-
     fig.savefig('output/'+sample+'/transformed_withCoords.png')
+
+    # save transformed coordinates
     transformed_coords.columns = ['x','y']
-    # Step 3: Write modified data to new CSV
     transformed_coords.to_csv('output/'+sample+'/transformed.csv')
 
 def main():
+    # run on current sample
     run_coreg(snakemake.params['sample'])
 
 if __name__ == "__main__":
