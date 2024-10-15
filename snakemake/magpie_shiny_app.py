@@ -6,7 +6,8 @@ import pandas as pd
 import os
 from shiny.types import ImgData
 from pathlib import Path
-
+from scipy import ndimage
+import math
 
 # Define the Shiny app UI
 app_ui = ui.page_fluid(
@@ -30,9 +31,15 @@ app_ui = ui.page_fluid(
     ui.input_slider("point_size","Select size of point",1,300,100),
     ui.input_checkbox("flipx_dimred", "Flip dimensionality reduction in x", False),
     ui.input_checkbox("flipy_dimred", "Flip dimensionality reduction in y", False),
+    ui.input_checkbox("rotate_dimred", "Rotate dimensionality reduction", False),
+    ui.panel_conditional("input.rotate_dimred",
+    ui.input_select("rotate_dimred_angle", "Angle to rotate dimensionality reduction", choices=[90,180,270])),
     ui.panel_conditional("output.middleHE=='MSI H&E image detected'",
         ui.input_checkbox("flipx_msihe", "Flip MSI H&E in x", False),
         ui.input_checkbox("flipy_msihe", "Flip MSI H&E in y", False)),
+        ui.input_checkbox("rotate_msihe", "Rotate MSI H&E", False),
+        ui.panel_conditional("input.rotate_msihe",
+        ui.input_select("rotate_msihe_angle", "Angle to rotate MSI H&E", choices=[90,180,270])),
 
     ui.input_action_button("run_dimred", "Run dimensionality reduction"),
     ui.panel_conditional("output.middleHE=='No MSI H&E image detected'",
@@ -50,10 +57,10 @@ app_ui = ui.page_fluid(
                         )),                     
     # Show dim reduction
     ui.output_text("middleHE"),
-    ui.panel_conditional("input.flipx_dimred || input.flipy_dimred",
-        ui.input_action_button("save_flipped_dim_red", "Save flipped version of MSI data")),
-    ui.panel_conditional("input.flipx_msihe || input.flipy_msihe",
-        ui.input_action_button("save_flipped_msihe", "Save flipped version of MSI H&E")),
+    ui.panel_conditional("input.flipx_dimred || input.flipy_dimred || input.rotate_dimred",
+        ui.input_action_button("save_flipped_dim_red", "Save altered version of MSI data")),
+    ui.panel_conditional("input.flipx_msihe || input.flipy_msihe || input.rotate_msihe",
+        ui.input_action_button("save_flipped_msihe", "Save altered version of MSI H&E")),
     # Pick landmarks between MSI and Visium H&E (if no MSI H&E)
     ui.panel_conditional("output.middleHE=='No MSI H&E image detected'",
                          ui.h3("Select landmarks between MSI data and Visium H&E"),
@@ -190,6 +197,19 @@ def server(input, output, session):
             msi_coords['x']= (-msi_coords['x'])
         if input.flipy_dimred()==True:
             msi_coords['y']= (-msi_coords['y'])
+        print('got here')
+        if input.rotate_dimred()==True:
+
+            print('in if statement')
+            print(int(input.rotate_dimred_angle()))
+            print(math.radians(int(input.rotate_dimred_angle())))
+            old_x = msi_coords['x']
+            old_y = msi_coords['y']
+            msi_coords['x']= (old_x * math.cos(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.sin(math.radians(int(input.rotate_dimred_angle()))))
+            print('made it here')
+            msi_coords['y']= (old_x * math.sin(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.cos(math.radians(int(input.rotate_dimred_angle()))))
+            print('got further')
+        print(msi_coords)
         fig, ax = plt.subplots(nrows=1, ncols=1,dpi=100)  # create figure & 1 axis
         ax.margins(x=0,y=0)
         if input.msi_colouring() == 'PC1':
@@ -244,7 +264,7 @@ def server(input, output, session):
     # Show MSI H&E
     @output
     @render.plot(height=450)
-    @reactive.event(input.pick_sample,input.flipx_msihe,input.flipy_msihe)
+    @reactive.event(input.pick_sample,input.flipx_msihe,input.flipy_msihe,input.rotate_msihe,input.rotate_msihe_angle)
     def show_msi_he():
         # Create the figure and axes
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
@@ -254,6 +274,8 @@ def server(input, output, session):
             msi_he = np.fliplr(msi_he)
         if input.flipy_msihe()==True:
             msi_he = np.flipud(msi_he)
+        if input.rotate_msihe()==True:
+            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
         # Display the images in two subplots
         ax.imshow(msi_he)
         ax.set_title('MSI HE Image')
@@ -456,6 +478,12 @@ def server(input, output, session):
             msi_coords['x']= (-msi_coords['x'])
         if input.flipy_dimred()==True:
             msi_coords['y']= (-msi_coords['y'])   
+        if input.rotate_dimred()==True:
+            old_x = msi_coords['x']
+            old_y = msi_coords['y']
+            msi_coords['x']= (old_x * math.cos(math.radians(input.rotate_dimred_angle()))) - (old_y * math.sin(math.radians(input.rotate_dimred_angle())))
+            msi_coords['y']= (old_x * math.sin(math.radians(input.rotate_dimred_angle()))) - (old_y * math.cos(math.radians(input.rotate_dimred_angle())))
+
         msi_coords.to_csv('input/'+input.pick_sample()+'/msi/MSI_metadata_modified.csv')
 
     @reactive.Effect
@@ -466,6 +494,8 @@ def server(input, output, session):
             msi_he = np.fliplr(msi_he)
         if input.flipy_msihe()==True:
             msi_he = np.flipud(msi_he)
+        if input.rotate_msihe()==True:
+            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
         plt.imsave('input/'+input.pick_sample()+'/msi/MSI_HE_modified.jpg',msi_he)
 
      # All elements for picking landmarks between MSI and MSI H&E ---------------------------
@@ -483,7 +513,7 @@ def server(input, output, session):
     # Show MSI H&E
     @output
     @render.plot(height=450)
-    @reactive.event(input.pick_sample,input.flipx_msihe,input.flipy_msihe)
+    @reactive.event(input.pick_sample,input.flipx_msihe,input.flipy_msihe,input.rotate_msihe,input.rotate_msihe_angle)
     def plot_MSI2HE_right():
         # Create the figure and axes
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
@@ -493,6 +523,8 @@ def server(input, output, session):
             msi_he = np.fliplr(msi_he)
         if input.flipy_msihe()==True:
             msi_he = np.flipud(msi_he)
+        if input.rotate_msihe()==True:
+            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
         # Display the images in two subplots
         ax.imshow(msi_he)
         ax.set_title('MSI HE Image')
@@ -530,7 +562,7 @@ def server(input, output, session):
     # Show MSI H&E with clicked points
     @output
     @render.plot(height=450)
-    @reactive.event(input.plot_MSI2HE_right_click,input.undo_MSI2HE_right_click,input.flipx_msihe,input.flipy_msihe)
+    @reactive.event(input.plot_MSI2HE_right_click,input.undo_MSI2HE_right_click,input.flipx_msihe,input.flipy_msihe,input.rotate_msihe,input.rotate_msihe_angle)
     def plot_MSI2HE_withselected_right():
         # Create the figure and axes
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
@@ -542,6 +574,8 @@ def server(input, output, session):
             msi_he = np.fliplr(msi_he)
         if input.flipy_msihe()==True:
             msi_he = np.flipud(msi_he)
+        if input.rotate_msihe()==True:
+            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
 
         # Display the images in two subplots
         ax.imshow(msi_he)
@@ -643,7 +677,7 @@ def server(input, output, session):
     # Show MSI H&E
     @output
     @render.plot(height=450)
-    @reactive.event(input.pick_sample,input.flipx_msihe,input.flipy_msihe)
+    @reactive.event(input.pick_sample,input.flipx_msihe,input.flipy_msihe,input.rotate_msihe,input.rotate_msihe_angle)
     def plot_HE2HE_left():
         # Load the images
        # Create the figure and axes
@@ -654,6 +688,8 @@ def server(input, output, session):
             msi_he = np.fliplr(msi_he)
         if input.flipy_msihe()==True:
             msi_he = np.flipud(msi_he)
+        if input.rotate_msihe()==True:
+            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
 
         # Display the images in two subplots
         ax.imshow(msi_he)
@@ -684,7 +720,7 @@ def server(input, output, session):
     # Show MSI H&E with clicked points
     @output
     @render.plot(height=450)
-    @reactive.event(input.plot_HE2HE_left_click,input.undo_HE2HE_left_click,input.flipx_msihe,input.flipy_msihe)
+    @reactive.event(input.plot_HE2HE_left_click,input.undo_HE2HE_left_click,input.flipx_msihe,input.flipy_msihe,input.rotate_msihe,input.rotate_msihe_angle)
     def plot_HE2HE_withselected_left():
         # Create the figure and axes
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
@@ -695,6 +731,8 @@ def server(input, output, session):
             msi_he = np.fliplr(msi_he)
         if input.flipy_msihe()==True:
             msi_he = np.flipud(msi_he)
+        if input.rotate_msihe()==True:
+            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
 
         # Display the images in two subplots
         ax.imshow(msi_he)

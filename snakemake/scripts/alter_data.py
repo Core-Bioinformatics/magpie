@@ -31,7 +31,7 @@ def map_coords_noHE(file,transform):
         tfm = TpsTransform()
         tfm.estimate((landmarks.iloc[:,:2]).to_numpy(),(landmarks.iloc[:,2:4]).to_numpy())
         msi_coords_tfm = pd.DataFrame(tfm(msi_coords[['x','y']].to_numpy()))
-
+    msi_coords_tfm.index = msi_coords.index
     return {'transformed_coords':msi_coords_tfm,'msi_he_image':None}
 
 # Identify transform needed to map from MSI dim reduction to MSI H&E and apply it
