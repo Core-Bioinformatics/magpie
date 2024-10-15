@@ -1,0 +1,4 @@
+.DS_Store
+snakemake/.snakemake/
+snakemake/__pycache__/
+snakemake/input/
