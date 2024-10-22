@@ -8,6 +8,7 @@ from shiny.types import ImgData
 from pathlib import Path
 from scipy import ndimage
 import math
+import glob
 
 # Define the Shiny app UI
 app_ui = ui.page_fluid(
@@ -148,7 +149,15 @@ def server(input, output, session):
 
     # Show available samples
     def find_samples():
-        visible_files = sorted([file for file in os.listdir('input/') if not file.startswith('.')])
+        if os.path.isfile('input/selected.txt'):
+            file = open("input/selected.txt", "r")
+            visible_files = [line.rstrip() for line in file]
+        else:
+            visible_files = [x.replace('/msi', '') for x in glob.glob('*/msi',root_dir='input')]
+        if os.path.isfile('input/exclude.txt'):
+            file = open("input/exclude.txt", "r")
+            visible_files = list(set(visible_files).difference(set([line.rstrip() for line in file])))
+        visible_files.sort()
         ui.update_select("pick_sample", choices=visible_files)
         return visible_files
 
