@@ -9,6 +9,7 @@ from pathlib import Path
 from scipy import ndimage
 import math
 import glob
+import copy
 
 # Define the Shiny app UI
 app_ui = ui.page_fluid(
@@ -256,7 +257,7 @@ def server(input, output, session):
     @render.plot(height=450)
     def show_dim_red():
         # Load the images
-        fig,ax = msi_dimred()
+        fig,ax = copy.deepcopy(msi_dimred())
         fig.tight_layout()
         fig.set_dpi(100)
         return fig
@@ -265,7 +266,7 @@ def server(input, output, session):
     @render.plot(height=450)
     def show_dim_red2():
         # Load the images
-        fig,ax = msi_dimred()
+        fig,ax = copy.deepcopy(msi_dimred())
         fig.tight_layout()
         fig.set_dpi(100)
         return fig
@@ -334,7 +335,7 @@ def server(input, output, session):
     @render.plot(height=450)
     def plot_noHE_left():
         # Load the images
-        fig,ax = msi_dimred()
+        fig,ax = copy.deepcopy(msi_dimred())
         fig.tight_layout()
         fig.set_dpi(100)
         return fig
@@ -363,7 +364,7 @@ def server(input, output, session):
     @reactive.event(input.plot_noHE_left_click,input.undo_noHE_left_click)
     def plot_noHE_withselected_left():
         # Create the figure and axes
-        fig, ax = msi_dimred()
+        fig,ax = copy.deepcopy(msi_dimred())
 #        # Get the list of clicked coordinates
         current_coords_left = clicked_coords_noHE_left.get()
         if current_coords_left:
@@ -514,7 +515,7 @@ def server(input, output, session):
     @render.plot(height=450)
     def plot_MSI2HE_left():
         # Plot dim
-        fig,ax = msi_dimred()
+        fig,ax = copy.deepcopy(msi_dimred())
         fig.tight_layout()
         fig.set_dpi(100)
         return fig
@@ -552,7 +553,7 @@ def server(input, output, session):
     def plot_MSI2HE_withselected_left():
         # Create the figure and axes
 
-        fig, ax = msi_dimred()
+        fig,ax = copy.deepcopy(msi_dimred())
 
         # Get the list of clicked coordinates
         current_coords_left = clicked_coords_MSI2HE_left()
