@@ -1,0 +1,7 @@
+# Book settings
+title: "Magpie Pipeline Documentation"
+author: "Eleanor C. Williams"
+author: "Lovisa Franzén"
+logo: "figures/magpie_logo.png"
+execute:
+  execute_notebooks: "off"  # Disable automatic execution of notebooks during build

@@ -1,0 +1,20 @@
+# Table of contents
+format: jb-book
+root: intro
+
+parts:
+  - caption: Intro
+    chapters:
+    - file: pipeline-overview
+    - file: setup
+    - file: inputs
+  - caption: Pipeline outputs
+    chapters:
+    - file: results/results-summary
+  - caption: Individual pipeline steps
+    chapters:
+    - file: shiny-app/shiny-app
+    - file: snakemake-rules/rule-1
+    - file: snakemake-rules/rule-2
+    - file: snakemake-rules/rule-3
+
