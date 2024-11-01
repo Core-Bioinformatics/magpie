@@ -268,7 +268,6 @@ def server(input, output, session):
     def show_dim_red():
         # Load the images
         fig,ax = copy.deepcopy(msi_dimred())
-        fig.tight_layout()
         fig.set_dpi(100)
         return fig
     
@@ -277,7 +276,6 @@ def server(input, output, session):
     def show_dim_red2():
         # Load the images
         fig,ax = copy.deepcopy(msi_dimred())
-        fig.tight_layout()
         fig.set_dpi(100)
         return fig
     
@@ -349,7 +347,6 @@ def server(input, output, session):
     def plot_noHE_left():
         # Load the images
         fig,ax = copy.deepcopy(msi_dimred())
-        fig.tight_layout()
         fig.set_dpi(100)
         return fig
     
@@ -386,7 +383,6 @@ def server(input, output, session):
                 for i in range(len(current_coords_left)):
                     ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
                     ax.text(x_vals[i], y_vals[i], str(i),   color='red',fontsize=9)
-        fig.tight_layout()
         fig.set_dpi(100)
         # Tight layout for clean display
         return fig
@@ -532,7 +528,6 @@ def server(input, output, session):
     def plot_MSI2HE_left():
         # Plot dim
         fig,ax = copy.deepcopy(msi_dimred())
-        fig.tight_layout()
         fig.set_dpi(100)
         return fig
     
@@ -581,7 +576,6 @@ def server(input, output, session):
                     ax.text(x_vals[i], y_vals[i], str(i),   color='red',fontsize=9)
 
         # Tight layout for clean display
-        fig.tight_layout()
         fig.set_dpi(100)
         return fig
     
