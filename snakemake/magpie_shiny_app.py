@@ -14,36 +14,52 @@ import copy
 # Define the Shiny app UI
 app_ui = ui.page_fluid(
 
+    ui.tags.style(
+        """
+        .center-box {
+            max-width: 800px;  /* Set the maximum width of the box */
+            margin: 20px auto;    /* Center-aligns the box */
+            background-color: #D1DAE2;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional shadow for styling */
+            border-radius: 8px;
+        }
+        """
+    ),
     
     ui.panel_well(
+        
         ui.layout_columns(
             ui.panel_title("MAGPIE: Multimodal alignment of genes and peaks for integrative exploration"),
             ui.output_image("show_magpie_logo",height='300px'))),
-    
-    ui.h3("Sample selection:"),  
-    ui.output_text("show_samples"),
-    ui.input_select("pick_sample", None, choices=[]),
-    # Select dim reduction and run it
-    ui.h3("Pick colouring for MSI data:"),
-    ui.input_select("msi_colouring", None, choices=['PC1','First 3 PCs','Individual peak']),
-    ui.panel_conditional("input.msi_colouring=='Individual peak'",
-        ui.input_selectize("peak_choice", None, choices=[],multiple=False)),
-    ui.panel_conditional("input.msi_colouring!='Individual peak'",
-        ui.input_selectize("peak_choices", None, choices=[],multiple=True)),
-    ui.input_slider("point_size","Select size of point",1,300,100),
-    ui.input_checkbox("flipx_dimred", "Flip dimensionality reduction in x", False),
-    ui.input_checkbox("flipy_dimred", "Flip dimensionality reduction in y", False),
-    ui.input_checkbox("rotate_dimred", "Rotate dimensionality reduction", False),
-    ui.panel_conditional("input.rotate_dimred",
-    ui.input_select("rotate_dimred_angle", "Angle to rotate dimensionality reduction", choices=[90,180,270])),
-    ui.panel_conditional("output.middleHE=='MSI H&E image detected'",
-        ui.input_checkbox("flipx_msihe", "Flip MSI H&E in x", False),
-        ui.input_checkbox("flipy_msihe", "Flip MSI H&E in y", False)),
-        ui.input_checkbox("rotate_msihe", "Rotate MSI H&E", False),
-        ui.panel_conditional("input.rotate_msihe",
-        ui.input_select("rotate_msihe_angle", "Angle to rotate MSI H&E", choices=[90,180,270])),
+    ui.panel_well(
+        ui.h3("Sample selection:"),  
+        ui.output_text("show_samples"),
+        ui.input_select("pick_sample", None, choices=[],width='400px'),
+        # Select dim reduction and run it
+        ui.h3("Pick colouring for MSI data:"),
+        ui.input_select("msi_colouring", None, choices=['PC1','First 3 PCs','Individual peak'],width='400px'),
+        ui.panel_conditional("input.msi_colouring=='Individual peak'",
+            ui.input_selectize("peak_choice", None, choices=[],multiple=False,width='400px')),
+        ui.panel_conditional("input.msi_colouring!='Individual peak'",
+            ui.input_selectize("peak_choices", None, choices=[],multiple=True,width='400px')),
+        ui.input_slider("point_size","Select size of point",1,300,100,width='400px'),
+        ui.h3("Adjust dimensionality reduction image"),
+        ui.input_checkbox("flipx_dimred", "Flip dimensionality reduction in x", False),
+        ui.input_checkbox("flipy_dimred", "Flip dimensionality reduction in y", False),
+        ui.input_checkbox("rotate_dimred", "Rotate dimensionality reduction", False),
+        ui.panel_conditional("input.rotate_dimred",
+        ui.input_select("rotate_dimred_angle", "Angle to rotate dimensionality reduction", choices=[90,180,270])),
+        ui.panel_conditional("output.middleHE=='MSI H&E image detected'",
+            ui.h3("Adjust MSI H&E image"),
+            ui.input_checkbox("flipx_msihe", "Flip MSI H&E in x", False),
+            ui.input_checkbox("flipy_msihe", "Flip MSI H&E in y", False)),
+            ui.input_checkbox("rotate_msihe", "Rotate MSI H&E", False),
+            ui.panel_conditional("input.rotate_msihe",
+            ui.input_select("rotate_msihe_angle", "Angle to rotate MSI H&E", choices=[90,180,270])),
 
-    ui.input_action_button("run_dimred", "Run dimensionality reduction"),
+        ui.input_action_button("run_dimred", "Run dimensionality reduction"),
+        class_="center-box"),
     ui.panel_conditional("output.middleHE=='No MSI H&E image detected'",
                          ui.layout_columns(
                              ui.card(ui.output_plot("show_dim_red")),
@@ -202,24 +218,18 @@ def server(input, output, session):
         clicked_coords_HE2HE_right.set([])
         
         msi_intensities = dimred_options()
-        msi_coords = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_metadata.csv',index_col=0)
+        msi_coords = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_metadata.csv')
         if input.flipx_dimred()==True:
             msi_coords['x']= (-msi_coords['x'])
         if input.flipy_dimred()==True:
             msi_coords['y']= (-msi_coords['y'])
-        print('got here')
         if input.rotate_dimred()==True:
 
-            print('in if statement')
-            print(int(input.rotate_dimred_angle()))
-            print(math.radians(int(input.rotate_dimred_angle())))
             old_x = msi_coords['x']
             old_y = msi_coords['y']
             msi_coords['x']= (old_x * math.cos(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.sin(math.radians(int(input.rotate_dimred_angle()))))
-            print('made it here')
             msi_coords['y']= (old_x * math.sin(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.cos(math.radians(int(input.rotate_dimred_angle()))))
-            print('got further')
-        print(msi_coords)
+
         fig, ax = plt.subplots(nrows=1, ncols=1,dpi=100)  # create figure & 1 axis
         ax.margins(x=0,y=0)
         if input.msi_colouring() == 'PC1':
@@ -279,20 +289,23 @@ def server(input, output, session):
         # Create the figure and axes
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
-        msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
-        if input.flipx_msihe()==True:
-            msi_he = np.fliplr(msi_he)
-        if input.flipy_msihe()==True:
-            msi_he = np.flipud(msi_he)
-        if input.rotate_msihe()==True:
-            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
-        # Display the images in two subplots
-        ax.imshow(msi_he)
-        ax.set_title('MSI HE Image')
+        try:
+            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            if input.flipx_msihe()==True:
+                msi_he = np.fliplr(msi_he)
+            if input.flipy_msihe()==True:
+                msi_he = np.flipud(msi_he)
+            if input.rotate_msihe()==True:
+                msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
+            # Display the images in two subplots
+            ax.imshow(msi_he)
+            ax.set_title('MSI HE Image')
 
-        # Tight layout for clean display
-        fig.tight_layout()
-        return fig
+            # Tight layout for clean display
+            fig.tight_layout()
+            return fig
+        except :
+            pass
     
     @output
     @render.plot(height=450)
@@ -478,12 +491,12 @@ def server(input, output, session):
     @reactive.Effect
     @reactive.event(input.download_noHE)
     def download_noHE():
-       coords_calc_noHE().to_csv('input/'+input.pick_sample()+'/landmarks_noHE.csv')
+       coords_calc_noHE().to_csv('input/'+input.pick_sample()+'/landmarks_noHE.csv',index=False)
 
     @reactive.Effect
     @reactive.event(input.save_flipped_dim_red)
     def save_flipped_dim_red():
-        msi_coords = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_metadata.csv',index_col=0)
+        msi_coords = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_metadata.csv')
         if input.flipx_dimred()==True:
             msi_coords['x']= (-msi_coords['x'])
         if input.flipy_dimred()==True:
@@ -494,19 +507,22 @@ def server(input, output, session):
             msi_coords['x']= (old_x * math.cos(math.radians(input.rotate_dimred_angle()))) - (old_y * math.sin(math.radians(input.rotate_dimred_angle())))
             msi_coords['y']= (old_x * math.sin(math.radians(input.rotate_dimred_angle()))) - (old_y * math.cos(math.radians(input.rotate_dimred_angle())))
 
-        msi_coords.to_csv('input/'+input.pick_sample()+'/msi/MSI_metadata_modified.csv')
+        msi_coords.to_csv('input/'+input.pick_sample()+'/msi/MSI_metadata_modified.csv',index=False)
 
     @reactive.Effect
     @reactive.event(input.save_flipped_msihe)
     def save_flipped_msihe():
-        msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
-        if input.flipx_msihe()==True:
-            msi_he = np.fliplr(msi_he)
-        if input.flipy_msihe()==True:
-            msi_he = np.flipud(msi_he)
-        if input.rotate_msihe()==True:
-            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
-        plt.imsave('input/'+input.pick_sample()+'/msi/MSI_HE_modified.jpg',msi_he)
+        try:
+            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            if input.flipx_msihe()==True:
+                msi_he = np.fliplr(msi_he)
+            if input.flipy_msihe()==True:
+                msi_he = np.flipud(msi_he)
+            if input.rotate_msihe()==True:
+                msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
+            plt.imsave('input/'+input.pick_sample()+'/msi/MSI_HE_modified.jpg',msi_he)
+        except:
+            pass
 
      # All elements for picking landmarks between MSI and MSI H&E ---------------------------
 
@@ -528,23 +544,23 @@ def server(input, output, session):
         # Create the figure and axes
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
-        msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
-        if input.flipx_msihe()==True:
-            msi_he = np.fliplr(msi_he)
-        if input.flipy_msihe()==True:
-            msi_he = np.flipud(msi_he)
-        if input.rotate_msihe()==True:
-            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
-        # Display the images in two subplots
-        ax.imshow(msi_he)
-        ax.set_title('MSI HE Image')
+        try:
+            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            if input.flipx_msihe()==True:
+                msi_he = np.fliplr(msi_he)
+            if input.flipy_msihe()==True:
+                msi_he = np.flipud(msi_he)
+            if input.rotate_msihe()==True:
+                msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
+            # Display the images in two subplots
+            ax.imshow(msi_he)
+            ax.set_title('MSI HE Image')
 
-        # Tight layout for clean display
-        fig.tight_layout()
-        
-
-
-        return fig
+            # Tight layout for clean display
+            fig.tight_layout()
+            return fig
+        except:
+            pass
 
     # Show dim red with clicked points
     @output
@@ -578,30 +594,32 @@ def server(input, output, session):
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         
         # Load the images
+        try:
+            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            if input.flipx_msihe()==True:
+                msi_he = np.fliplr(msi_he)
+            if input.flipy_msihe()==True:
+                msi_he = np.flipud(msi_he)
+            if input.rotate_msihe()==True:
+                msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
 
-        msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
-        if input.flipx_msihe()==True:
-            msi_he = np.fliplr(msi_he)
-        if input.flipy_msihe()==True:
-            msi_he = np.flipud(msi_he)
-        if input.rotate_msihe()==True:
-            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
+            # Display the images in two subplots
+            ax.imshow(msi_he)
+            ax.set_title('MSI H&E Image')
 
-        # Display the images in two subplots
-        ax.imshow(msi_he)
-        ax.set_title('MSI H&E Image')
-
-        # Get the list of clicked coordinates
-        current_coords_right = clicked_coords_MSI2HE_right()
-        if current_coords_right:
-            if len(current_coords_right)>0:
-                x_vals, y_vals = zip(*current_coords_right)  # Unpack the coordinates
-                for i in range(len(current_coords_right)):
-                    ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
-                    ax.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
-        # Tight layout for clean display
-        fig.tight_layout()
-        return fig
+            # Get the list of clicked coordinates
+            current_coords_right = clicked_coords_MSI2HE_right()
+            if current_coords_right:
+                if len(current_coords_right)>0:
+                    x_vals, y_vals = zip(*current_coords_right)  # Unpack the coordinates
+                    for i in range(len(current_coords_right)):
+                        ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
+                        ax.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
+            # Tight layout for clean display
+            fig.tight_layout()
+            return fig
+        except:
+            pass
 
     # Update clicked points 
     @reactive.Effect
@@ -679,7 +697,7 @@ def server(input, output, session):
     @reactive.Effect
     @reactive.event(input.download_MSI2HE)
     def download_MSI2HE():
-        coords_calc_MSI2HE().to_csv('input/'+input.pick_sample()+'/landmarks_MSI2HE.csv')
+        coords_calc_MSI2HE().to_csv('input/'+input.pick_sample()+'/landmarks_MSI2HE.csv',index=False)
 
 
     # All elements for picking landmarks between MSI H&E and Visium ------------------------------------
@@ -693,21 +711,24 @@ def server(input, output, session):
        # Create the figure and axes
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
-        msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
-        if input.flipx_msihe()==True:
-            msi_he = np.fliplr(msi_he)
-        if input.flipy_msihe()==True:
-            msi_he = np.flipud(msi_he)
-        if input.rotate_msihe()==True:
-            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
+        try:
+            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            if input.flipx_msihe()==True:
+                msi_he = np.fliplr(msi_he)
+            if input.flipy_msihe()==True:
+                msi_he = np.flipud(msi_he)
+            if input.rotate_msihe()==True:
+                msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
 
-        # Display the images in two subplots
-        ax.imshow(msi_he)
-        ax.set_title('MSI HE Image')
+            # Display the images in two subplots
+            ax.imshow(msi_he)
+            ax.set_title('MSI HE Image')
 
-        # Tight layout for clean display
-        fig.tight_layout()
-        return fig
+            # Tight layout for clean display
+            fig.tight_layout()
+            return fig
+        except:
+            pass
     
     # Show Visium H&E
     @output
@@ -736,29 +757,32 @@ def server(input, output, session):
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         
         # Load the images
-        msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
-        if input.flipx_msihe()==True:
-            msi_he = np.fliplr(msi_he)
-        if input.flipy_msihe()==True:
-            msi_he = np.flipud(msi_he)
-        if input.rotate_msihe()==True:
-            msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
+        try:
+            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            if input.flipx_msihe()==True:
+                msi_he = np.fliplr(msi_he)
+            if input.flipy_msihe()==True:
+                msi_he = np.flipud(msi_he)
+            if input.rotate_msihe()==True:
+                msi_he = ndimage.rotate(msi_he, int(input.rotate_msihe_angle()))
 
-        # Display the images in two subplots
-        ax.imshow(msi_he)
-        ax.set_title('MSI H&E Image')
+            # Display the images in two subplots
+            ax.imshow(msi_he)
+            ax.set_title('MSI H&E Image')
 
-        # Get the list of clicked coordinates
-        current_coords_left = clicked_coords_HE2HE_left()
-        if current_coords_left:
-            if len(current_coords_left)>0:
-                x_vals, y_vals = zip(*current_coords_left)  # Unpack the coordinates
-                for i in range(len(current_coords_left)):
-                    ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
-                    ax.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
-        # Tight layout for clean display
-        fig.tight_layout()
-        return fig
+            # Get the list of clicked coordinates
+            current_coords_left = clicked_coords_HE2HE_left()
+            if current_coords_left:
+                if len(current_coords_left)>0:
+                    x_vals, y_vals = zip(*current_coords_left)  # Unpack the coordinates
+                    for i in range(len(current_coords_left)):
+                        ax.plot(x_vals[i], y_vals[i], 'ro', markersize=5)  # Red dots on MSI HE image
+                        ax.text(x_vals[i], y_vals[i], str(i),color='r',fontsize=9)
+            # Tight layout for clean display
+            fig.tight_layout()
+            return fig
+        except:
+            pass
     
     # Show Visium H&E with clicked points
     @output
@@ -863,7 +887,7 @@ def server(input, output, session):
     @reactive.Effect
     @reactive.event(input.download_HE2HE)
     def download_HE2HE():
-        coords_calc_HE2HE().to_csv('input/'+input.pick_sample()+'/landmarks_HE2HE.csv')
+        coords_calc_HE2HE().to_csv('input/'+input.pick_sample()+'/landmarks_HE2HE.csv',index=False)
 
 
 

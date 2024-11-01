@@ -55,12 +55,13 @@ def create_mock_spaceranger(
     # Read MSI coordinates
     if verbose:
         print("Reading MSI coordinate file...")
-    msi_coords = pd.read_csv(msi_coord_fname, index_col=0)
-    msi_coords['spot_id'] = msi_coords.index
+    msi_coords = pd.read_csv(msi_coord_fname)
     msi_coords['x'] = msi_coords['x']/scale_factor
     msi_coords['y'] = msi_coords['y']/scale_factor
     msi_coords['x_2'] = msi_coords['x']
     msi_coords['y_2'] = msi_coords['y']
+    msi_coords = msi_coords.set_index('spot_id',drop=False)
+
     # Add "in_tissue" column
     msi_coords["in_tissue"] = 1
     msi_tissue_pos = msi_coords.rename(
@@ -72,13 +73,13 @@ def create_mock_spaceranger(
             'y': "pxl_row_in_fullres",
         }
     )
-    print(msi_tissue_pos)
-
+    
     # Rename "barcodes" so that they are characters
     msi_tissue_pos["barcode"] = msi_spot_prefix + "_" + sample_name + "_" + msi_tissue_pos["barcode"].astype(str)
 
     msi_tissue_pos = msi_tissue_pos[['barcode','in_tissue','array_row','array_col','pxl_row_in_fullres','pxl_col_in_fullres']]
     # Write tissue_positions.csv
+    
     msi_tissue_pos.to_csv(os.path.join(spatial_path, "tissue_positions_list.csv"),index=False,header=False)
     if verbose:
         print(f"The new MSI coordinate file has been saved, containing {len(msi_tissue_pos)} spots/pixels.")
@@ -110,17 +111,16 @@ def create_mock_spaceranger(
     if verbose:
         print("Reading MSI peak data file...")
     msi_peaks = pd.read_csv(msi_peak_data_path, header=0,index_col=0)
-    #print(msi_peaks[:5])
+    print(msi_peaks[:5])
    
     # Create feature IDs
     msi_peaks_features = pd.DataFrame(
-        {"id1": [msi_feat_prefix + "-" + col for col in msi_peaks.columns[1:]]}
+        {"id1": [msi_feat_prefix + "_" + col for col in msi_peaks.columns[1:]]}
     )
     msi_peaks_features["id2"] = msi_peaks_features["id1"]
 
     # Create barcode IDs
     msi_peaks_barcodes = msi_spot_prefix + "_" + sample_name + "_" + msi_coords.index.astype(str)
-    print(msi_peaks_barcodes)
 
     # Prepare MSI peak data matrix
     if verbose:

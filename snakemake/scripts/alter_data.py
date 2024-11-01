@@ -14,11 +14,11 @@ from TPS import *
 def map_coords_noHE(file,transform):
 
     # read landmark and MSI coordinate files
-    landmarks = pd.read_csv(file+'/landmarks_noHE.csv',index_col=0)
+    landmarks = pd.read_csv(file+'/landmarks_noHE.csv')
     if os.path.isfile(file+'/msi/MSI_metadata_modified.csv'):
-        msi_coords = pd.read_csv(file+'/msi/MSI_metadata_modified.csv',index_col=0)
+        msi_coords = pd.read_csv(file+'/msi/MSI_metadata_modified.csv')
     else:
-        msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv',index_col=0)
+        msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv')
 
     # apply affine or TPS transform to coordinates
     if (transform=='affine'):
@@ -38,12 +38,12 @@ def map_coords_noHE(file,transform):
 def map_coords_MSI2HE(file,transform):
 
     # read landmark and MSI coordinate files
-    landmarks = pd.read_csv(file+'/landmarks_MSI2HE.csv',index_col=0)
+    landmarks = pd.read_csv(file+'/landmarks_MSI2HE.csv')
 
     if os.path.isfile(file+'/msi/MSI_metadata_modified.csv'):
-        msi_coords = pd.read_csv(file+'/msi/MSI_metadata_modified.csv',index_col=0)
+        msi_coords = pd.read_csv(file+'/msi/MSI_metadata_modified.csv')
     else:
-        msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv',index_col=0)
+        msi_coords = pd.read_csv(file+'/msi/MSI_metadata.csv')
 
 
     # apply affine or TPS transform to coordinates
@@ -68,7 +68,7 @@ def map_coords_HE2HE(file,msi_coords,transform):
         msi_he_img = imread(file+'/msi/MSI_HE_modified.jpg')
     else:
         msi_he_img = imread(file+'/msi/MSI_HE.jpg')
-    landmarks = pd.read_csv(file+'/landmarks_HE2HE.csv',index_col=0)
+    landmarks = pd.read_csv(file+'/landmarks_HE2HE.csv')
     rows, cols = visium_he_img.shape[:2]
 
     # apply affine or TPS transform to coordinates and MSI H&E
@@ -119,14 +119,20 @@ def run_coreg(sample):
         out_image = visium_he_img
     plt.imsave(arr=out_image,fname='output/'+sample+'/transformed.png')
 
+    transformed_coords.columns = ['x','y']
     # plot coordinates on top of H&E image
     plt.imshow(out_image)
-    plt.scatter(x=transformed_coords[0],y=transformed_coords[1],s=0.1,c='r',alpha=1)
+    plt.scatter(x=transformed_coords['x'],y=transformed_coords['y'],s=0.1,c='r',alpha=1)
     fig.savefig('output/'+sample+'/transformed_withCoords.png')
 
     # save transformed coordinates
-    transformed_coords.columns = ['x','y']
-    transformed_coords.to_csv('output/'+sample+'/transformed.csv')
+    if os.path.isfile('input/'+sample+'/msi/MSI_metadata_modified.csv'):
+        msi_coords = pd.read_csv('input/'+sample+'/msi/MSI_metadata_modified.csv')
+    else:
+        msi_coords = pd.read_csv('input/'+sample+'/msi/MSI_metadata.csv')
+    transformed_coords['spot_id']=msi_coords['spot_id']
+    transformed_coords = transformed_coords[['spot_id','x','y']]
+    transformed_coords.to_csv('output/'+sample+'/transformed.csv',index=False)
 
 def main():
     # run on current sample
