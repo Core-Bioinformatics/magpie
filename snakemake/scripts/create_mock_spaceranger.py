@@ -111,7 +111,6 @@ def create_mock_spaceranger(
     if verbose:
         print("Reading MSI peak data file...")
     msi_peaks = pd.read_csv(msi_peak_data_path, header=0,index_col=0)
-    print(msi_peaks[:5])
    
     # Create feature IDs
     msi_peaks_features = pd.DataFrame(
