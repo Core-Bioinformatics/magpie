@@ -41,3 +41,25 @@ The MAGPIE pipeline automatically detects the files in your input folder and mak
     ├── landmarks_MSI2HE.csv                 # (OPTIONAL) Table of identified landmarks between MSI H&E and Visium H&E image (added by shiny app or identified externally)
     └── landmarks_noHE.csv                   # (OPTIONAL) Table of identified landmarks between MSI image and Visium H&E (added by shiny app or identified externally). 
                                                landmarks_noHE.csv or landmarks_MSI2HE.csv and landmarks_MSI2HE.csv are required for coregistration.
+
+## MSI data
+
+The MSI data should be split into an intensity table and a metadata table. The intensity table should look like this, with peaks on the columns and pixels on the rows.
+
+|    |101.2345   |  102.85754 | 303.35855   | 344.48575  | 321.38583  | 112.28485 |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---: |
+|pixel_0| 5774.812  | 675.361  | 23.555  | 8444.958  | 777.234  | 20.332  |
+|pixel_1| 8794.013  | 444.523  | 81.294  | 6775.393  | 899.284  | 10.275  |
+|pixel_2| 6777.358  | 857.585  | 14.326  | 9468.367  | 747.385  | 24.521  |
+|| ...  | ...  | ...  | ...  | ... | ... |
+
+| spot_id           | x   | y   | Sample   | Treatment | Fibrotic |
+| :---:        | :---:       | :---:       | :---:       | :---:   | :---: |
+| pixel_0 | 1        | 1        | sample_1        | treatment_1 | normal |
+| pixel_1 | 2        | 1        | sample_1        | treatment_1 | normal |
+| pixel_2 | 2        | 2        | sample_1       | treatment_1 | fibrotic |
+| pixel_3 | 3        | 1        | sample_2       | treatment_1 | fibrotic |
+| pixel_4 | 3        | 2        | sample_2       | treatment_1 | normal |
+| pixel_5 | 3        | 3        | sample_2       | treatment_1 | fibrotic |
+|| ...  | ...  | ...  | 
+
