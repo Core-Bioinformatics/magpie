@@ -19,6 +19,9 @@ rule all:
         expand("output/{sample}/"+output_file+"/filtered_feature_bc_matrix.h5", sample=samples)
         
 rule perform_coreg:
+    message:
+        "Performing co-registration."
+    conda: 'magpie'
     input:
         "input/{sample}/msi/MSI_metadata.csv"
     output:
@@ -32,6 +35,9 @@ rule perform_coreg:
         "scripts/alter_data.py"
 
 rule make_spaceranger:
+    message:
+        "Creating spaceranger formatted output."
+    conda: 'magpie'
     input:
         "output/{sample}/transformed.csv",
         "output/{sample}/transformed.png"
@@ -43,6 +49,9 @@ rule make_spaceranger:
         "scripts/create_mock_spaceranger.py"
 
 rule create_barcode_matrix:
+    message:
+        "Generating aggregated data."
+    conda: 'magpie'
     input:
         "output/{sample}/spaceranger/filtered_feature_bc_matrix.h5"
     output:
