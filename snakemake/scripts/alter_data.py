@@ -6,9 +6,9 @@ import os.path
 import sys
 from skimage.transform import (  
     AffineTransform,
+    ThinPlateSplineTransform,
     matrix_transform,
     warp)
-from TPS import *
 
 # Identify transform needed to map from MSI dim reduction to Visium H&E and apply it
 def map_coords_noHE(file,transform):
@@ -28,7 +28,7 @@ def map_coords_noHE(file,transform):
             msi_coords[['x', 'y']],
             tfm.params))
     elif (transform=='TPS'):
-        tfm = TpsTransform()
+        tfm = ThinPlateSplineTransform()
         tfm.estimate((landmarks.iloc[:,:2]).to_numpy(),(landmarks.iloc[:,2:4]).to_numpy())
         msi_coords_tfm = pd.DataFrame(tfm(msi_coords[['x','y']].to_numpy()))
     msi_coords_tfm.index = msi_coords.index
@@ -54,7 +54,7 @@ def map_coords_MSI2HE(file,transform):
             msi_coords[['x', 'y']],
             tfm.params))
     elif (transform=='TPS'):
-        tfm = TpsTransform()
+        tfm = ThinPlateSplineTransform()
         tfm.estimate((landmarks.iloc[:,:2]).to_numpy(),(landmarks.iloc[:,2:4]).to_numpy())
         msi_coords_tfm = pd.DataFrame(tfm(msi_coords[['x','y']].to_numpy()))
     msi_coords_tfm.index = msi_coords.index
@@ -82,10 +82,10 @@ def map_coords_HE2HE(file,msi_coords,transform):
         tfm.estimate(landmarks.iloc[:,2:4],landmarks.iloc[:,:2])
 
     elif (transform=='TPS'):
-        tfm = TpsTransform()
+        tfm = ThinPlateSplineTransform()
         tfm.estimate((landmarks.iloc[:,:2]).to_numpy(),(landmarks.iloc[:,2:4]).to_numpy())
         msi_coords_tfm = pd.DataFrame(tfm(msi_coords[[0,1]].to_numpy()))
-        tfm = TpsTransform()
+        tfm = ThinPlateSplineTransform()
         tfm.estimate((landmarks.iloc[:,2:4]).to_numpy(),(landmarks.iloc[:,:2]).to_numpy())
 
     transformed_image = warp(msi_he_img, tfm,output_shape=(rows,cols))
