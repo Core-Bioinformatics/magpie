@@ -14,6 +14,7 @@ parts:
   - caption: Individual pipeline steps
     chapters:
     - file: shiny-app/shiny-app
+    - file: snakemake-rules/snakemake-pipeline
     - file: snakemake-rules/rule-1
     - file: snakemake-rules/rule-2
     - file: snakemake-rules/rule-3

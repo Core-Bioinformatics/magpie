@@ -33,7 +33,7 @@ The MAGPIE pipeline requires a Python installation and the following package dep
 We recommend to create a conda environment with from which the whole pipeline can be run. You can install all required dependencies using the magpie_environment.yml file within the snakemake folder in the GitHub repository using the following command:
 
 ```bash
-env create -f magpie_environment.yml
+conda env create -f magpie_environment.yml
 ```
 
 ## 3. Activate Environment

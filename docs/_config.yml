@@ -5,3 +5,5 @@ author: "Lovisa Franzén"
 logo: "figures/magpie_logo.png"
 execute:
   execute_notebooks: "off"  # Disable automatic execution of notebooks during build
+parse:
+   myst_url_schemes: [mailto, http, https]

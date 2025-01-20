@@ -19,6 +19,7 @@ The exclude.txt and selected.txt files are optional and allow the user to list a
 
 The Snakefile, magpie_shiny_app.py and scripts and figures folders should all be copied from the GitHub repository.
 
+(input-structure)=
 ## Input folder structure
 
 The MAGPIE pipeline automatically detects the files in your input folder and makes decisions accordingly so you must ensure your files follow the following structure:
