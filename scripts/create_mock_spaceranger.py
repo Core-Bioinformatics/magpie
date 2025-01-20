@@ -199,4 +199,5 @@ if __name__ == "__main__":
                         snakemake.input[1],
                         snakemake.input[0],
                         visium_sf_json_path = "input/"+sample+"/visium/spatial/scalefactors_json.json",
-                        msi_peak_data_path = "input/"+sample+"/msi/MSI_intensities.csv")
+                        msi_peak_data_path = "input/"+sample+"/msi/MSI_intensities.csv",
+                        verbose=False)

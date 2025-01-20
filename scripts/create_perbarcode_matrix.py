@@ -40,9 +40,7 @@ def group_msi_perspot(msi_obj,visium_allcoords,visium_index,sample_name):
     spot_distances_long = pd.wide_to_long(spot_distances, i="visium_spot",stubnames='MSI_' + sample_name + "_",j='MSI_spot')
     spot_distances_long.columns = ['distance']
     close_points = spot_distances_long[spot_distances_long['distance'] < min_distance].reset_index()
-    print(close_points[:5])
     close_points['MSI_spot'] = ['MSI_'+ sample_name + "_" +str(spot_id) for spot_id in close_points['MSI_spot']]
-    print(close_points[:5])
     return(close_points)
 
 # helper function to get mean for each group
@@ -229,7 +227,8 @@ def main():
     create_mock_spaceranger_mean_intensity(mean_intensity,
                                         'output/'+sample+'/spaceranger_meanIntensity/',
                                         'output/'+sample+'/spaceranger/spatial/tissue_hires_image.png',
-                                            visium_dir = "input/"+sample+"/visium/")
+                                            visium_dir = "input/"+sample+"/visium/",
+                                            verbose=False)
     
 if __name__ == "__main__":
     main()
