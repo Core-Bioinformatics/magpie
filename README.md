@@ -1,6 +1,6 @@
 # MAGPIE: Multimodal alignment of genes and peaks for integrative exploration
 <p align="center">
-<img src="snakemake/figures/magpie_logo.png" width="200">
+<img src="figures/magpie_logo.png" width="200">
 </p>
 
 ## Installation
