@@ -74,11 +74,12 @@ app_ui = ui.page_fluid(
                             row_heights="500px"
                         )),                     
     # Show dim reduction
-    ui.output_text("middleHE"),
     ui.panel_conditional("input.flipx_dimred || input.flipy_dimred || input.rotate_dimred",
         ui.input_action_button("save_flipped_dim_red", "Save altered version of MSI data")),
     ui.panel_conditional("input.flipx_msihe || input.flipy_msihe || input.rotate_msihe",
         ui.input_action_button("save_flipped_msihe", "Save altered version of MSI H&E")),
+    ui.input_action_button("save_dim_red", "Save MSI colouring for later analysis"),
+    ui.output_text("middleHE"),
     # Pick landmarks between MSI and Visium H&E (if no MSI H&E)
     ui.panel_conditional("output.middleHE=='No MSI H&E image detected'",
                          ui.h3("Select landmarks between MSI data and Visium H&E"),
@@ -192,10 +193,13 @@ def server(input, output, session):
     @render.text
     @reactive.event(input.pick_sample)
     def middleHE():
-        if os.path.isfile('input/'+input.pick_sample()+'/msi/MSI_HE.jpg'):
+        if glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*') != []:
+            msi_he_img = glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*')
+            msi_he_img = [x for x in msi_he_img if any(ext in x for ext in ['tiff','png','jpg'])]
+        if not (msi_he_img is []):
             return('MSI H&E image detected')
-        else :
-            return('No MSI H&E image detected')
+        else:
+            return('MSI H&E image detected')
     
     # Update choices for dim reduction based on whether there's an MSI H&E
     @reactive.event(input.pick_sample)
@@ -230,15 +234,14 @@ def server(input, output, session):
             msi_coords['x']= (old_x * math.cos(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.sin(math.radians(int(input.rotate_dimred_angle()))))
             msi_coords['y']= (old_x * math.sin(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.cos(math.radians(int(input.rotate_dimred_angle()))))
 
-        fig, ax = plt.subplots(nrows=1, ncols=1,dpi=100)  # create figure & 1 axis
-        ax.margins(x=0,y=0)
         if input.msi_colouring() == 'PC1':
             from sklearn.decomposition import PCA
             if list(input.peak_choices()) != []:
                 msi_intensities = msi_intensities[list(input.peak_choices())]
             pca = PCA(n_components=1)
             reduction = pca.fit_transform(msi_intensities)
-            ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction,marker='.',s=input.point_size())
+            msi_coords['color']=reduction
+            
         if input.msi_colouring() == 'First 3 PCs':
             from sklearn.decomposition import PCA
             from sklearn.preprocessing import MinMaxScaler
@@ -252,10 +255,26 @@ def server(input, output, session):
             def rgb_to_hex(r, g, b):
                 return '#{:02x}{:02x}{:02x}'.format(r, g, b)
             reduction_colours_hex = [rgb_to_hex(int(np.round(255*x)),int(np.round(255*y)),int(np.round(255*z))) for [x,y,z] in reduction_colours]
-            ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction_colours_hex,marker='.',s=input.point_size())
+            msi_coords['color']=reduction_colours_hex
+#            ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction_colours_hex,marker='.',s=input.point_size())
         if input.msi_colouring() == 'Individual peak':
-            ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=msi_intensities[input.peak_choice()],marker='.',s=input.point_size())
+            msi_coords['color'] = msi_intensities[input.peak_choice()]
+        return(msi_coords)
+    
+    @reactive.Effect
+    @reactive.event(input.save_dim_red)
+    def save_flipped_dim_red():
+        msi_coords = msi_dimred()
+        msi_coords[['spot_id','x','y','color']].to_csv('input/'+input.pick_sample()+'/msi/MSI_dimreduction.csv',index=False)
 
+    
+    @reactive.calc
+    @reactive.event(input.run_dimred)
+    def msi_dimred_plot():
+        msi_coords = msi_dimred()
+        fig, ax = plt.subplots(nrows=1, ncols=1,dpi=100)  # create figure & 1 axis
+        ax.margins(x=0,y=0)
+        ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=msi_coords['color'],marker='.',s=input.point_size())
         fig.gca().set_aspect('equal')
         ax.set_title('MSI Image')
         ax.set_rasterization_zorder(0)
@@ -267,7 +286,7 @@ def server(input, output, session):
     @render.plot(height=450)
     def show_dim_red():
         # Load the images
-        fig,ax = copy.deepcopy(msi_dimred())
+        fig,ax = copy.deepcopy(msi_dimred_plot())
         fig.set_dpi(100)
         return fig
     
@@ -275,7 +294,7 @@ def server(input, output, session):
     @render.plot(height=450)
     def show_dim_red2():
         # Load the images
-        fig,ax = copy.deepcopy(msi_dimred())
+        fig,ax = copy.deepcopy(msi_dimred_plot())
         fig.set_dpi(100)
         return fig
     
@@ -288,7 +307,7 @@ def server(input, output, session):
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
         try:
-            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            msi_he = imread(glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*')[0])
             if input.flipx_msihe()==True:
                 msi_he = np.fliplr(msi_he)
             if input.flipy_msihe()==True:
@@ -346,7 +365,7 @@ def server(input, output, session):
     @render.plot(height=450)
     def plot_noHE_left():
         # Load the images
-        fig,ax = copy.deepcopy(msi_dimred())
+        fig,ax = copy.deepcopy(msi_dimred_plot())
         fig.set_dpi(100)
         return fig
     
@@ -374,7 +393,7 @@ def server(input, output, session):
     @reactive.event(input.plot_noHE_left_click,input.undo_noHE_left_click)
     def plot_noHE_withselected_left():
         # Create the figure and axes
-        fig,ax = copy.deepcopy(msi_dimred())
+        fig,ax = copy.deepcopy(msi_dimred_plot())
 #        # Get the list of clicked coordinates
         current_coords_left = clicked_coords_noHE_left.get()
         if current_coords_left:
@@ -509,7 +528,7 @@ def server(input, output, session):
     @reactive.event(input.save_flipped_msihe)
     def save_flipped_msihe():
         try:
-            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            msi_he = imread(glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*')[0])
             if input.flipx_msihe()==True:
                 msi_he = np.fliplr(msi_he)
             if input.flipy_msihe()==True:
@@ -527,7 +546,7 @@ def server(input, output, session):
     @render.plot(height=450)
     def plot_MSI2HE_left():
         # Plot dim
-        fig,ax = copy.deepcopy(msi_dimred())
+        fig,ax = copy.deepcopy(msi_dimred_plot())
         fig.set_dpi(100)
         return fig
     
@@ -540,7 +559,7 @@ def server(input, output, session):
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
         try:
-            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            msi_he = imread(glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*')[0])
             if input.flipx_msihe()==True:
                 msi_he = np.fliplr(msi_he)
             if input.flipy_msihe()==True:
@@ -564,7 +583,7 @@ def server(input, output, session):
     def plot_MSI2HE_withselected_left():
         # Create the figure and axes
 
-        fig,ax = copy.deepcopy(msi_dimred())
+        fig,ax = copy.deepcopy(msi_dimred_plot())
 
         # Get the list of clicked coordinates
         current_coords_left = clicked_coords_MSI2HE_left()
@@ -589,7 +608,7 @@ def server(input, output, session):
         
         # Load the images
         try:
-            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            msi_he = imread(glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*')[0])
             if input.flipx_msihe()==True:
                 msi_he = np.fliplr(msi_he)
             if input.flipy_msihe()==True:
@@ -706,7 +725,7 @@ def server(input, output, session):
         fig, ax = plt.subplots(1, 1, figsize=(10, 5))
         # Load the images
         try:
-            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            msi_he = imread(glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*')[0])
             if input.flipx_msihe()==True:
                 msi_he = np.fliplr(msi_he)
             if input.flipy_msihe()==True:
@@ -752,7 +771,7 @@ def server(input, output, session):
         
         # Load the images
         try:
-            msi_he = imread('input/'+input.pick_sample()+'/msi/MSI_HE.jpg')
+            msi_he = imread(glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*')[0])
             if input.flipx_msihe()==True:
                 msi_he = np.fliplr(msi_he)
             if input.flipy_msihe()==True:
