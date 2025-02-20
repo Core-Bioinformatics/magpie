@@ -89,7 +89,7 @@ def create_mock_spaceranger(
     distances = pdist(msi_tissue_pos[["pxl_row_in_fullres", "pxl_col_in_fullres"]])
     c_c_dist = distances[distances > 0].min()
     msi_json["spot_diameter_fullres"] = c_c_dist
-    msi_json["fiducial_diameter_fullres"] = 0
+    msi_json["tissue_lowres_scalef"] = msi_json["tissue_hires_scalef"]
 
     # Write new scale factor JSON (if data available)
     if (msi_peak_data_path and visium_sf_json_path) or msi_json:
