@@ -171,7 +171,7 @@ def server(input, output, session):
             file = open("input/selected.txt", "r")
             visible_files = [line.rstrip() for line in file]
         else:
-            visible_files = [x.replace('/msi', '') for x in glob.glob('*/msi',root_dir='input')]
+            visible_files = [x.replace('/msi', '').replace("\\","") for x in glob.glob('*/msi',root_dir='input')]
         if os.path.isfile('input/exclude.txt'):
             file = open("input/exclude.txt", "r")
             visible_files = list(set(visible_files).difference(set([line.rstrip() for line in file])))
