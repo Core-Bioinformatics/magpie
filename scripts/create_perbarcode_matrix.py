@@ -31,13 +31,12 @@ def group_msi_perspot(msi_obj,visium_allcoords,visium_index,sample_name):
 
     # get minimum distance between spots to find extended Visium radius
     min_distance = estimate_interspot_distance(visium_allcoords)
-
     # find distance from all MSI pixels to all Visium spots
-    spot_distances = pd.DataFrame(distance_matrix(visium_allcoords,msi_obj.obsm['spatial']),index=visium_index,columns=msi_obj.obs.index)
-    spot_distances['visium_spot']=spot_distances.index
+    spot_distances = pd.DataFrame(distance_matrix(visium_allcoords,msi_obj.obsm['spatial']),columns=msi_obj.obs.index)
+    spot_distances['visium_spot'] = visium_index
 
     # convert to long format and filter to those within the extended Visium radius
-    spot_distances_long = pd.wide_to_long(spot_distances, i="visium_spot",stubnames='MSI_' + sample_name + "_",j='MSI_spot')
+    spot_distances_long = pd.wide_to_long(spot_distances, i="visium_spot",stubnames='MSI_' + sample_name,j='MSI_spot', sep='_',suffix=r".+")
     spot_distances_long.columns = ['distance']
     close_points = spot_distances_long[spot_distances_long['distance'] < min_distance].reset_index()
     close_points['MSI_spot'] = ['MSI_'+ sample_name + "_" +str(spot_id) for spot_id in close_points['MSI_spot']]
@@ -53,13 +52,11 @@ def create_mean_intensity_table(msi_obj,visium_allcoords,visium_index,sample_nam
     # get all points grouped by Visium spot
     close_points = group_msi_perspot(msi_obj,visium_allcoords,visium_index,sample_name)
     msi_data = msi_obj.X
-
     # convert to sparse format
     msi_data = pd.DataFrame.sparse.from_spmatrix(msi_data)
     msi_data.index = msi_obj.obs.index
     msi_data.columns = msi_obj.var['gene_ids']
-    close_points.index = close_points['MSI_spot']
-
+    close_points.set_index('MSI_spot',inplace=True,drop=False)
     # get MSI intensities for all grouped points
     intensity_matrix = close_points.merge(msi_data,left_index=True,right_index=True)
 
@@ -103,7 +100,7 @@ def create_mock_spaceranger_mean_intensity(
 # get Visium scale factors and copy to MSI
     with open(visium_dir+"/spatial/scalefactors_json.json", "r") as f:
         st_json = json.load(f)
-    scale_factor = st_json['tissue_hires_scalef']
+
     msi_json = st_json
 
     # Get Visium coordinates which had an MSI pixel mapped to it
