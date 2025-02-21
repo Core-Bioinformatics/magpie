@@ -69,12 +69,10 @@ def map_coords_MSI2HE(sample,transform,msi_he_img):
     transformed_coords = msi_coords_tfm.copy()
     transformed_coords.columns = ['x','y']
     transformed_coords['spot_id']=msi_coords['spot_id']
-    print(transformed_coords[:5])
     if os.path.isfile('input/'+sample+'/msi/MSI_dimreduction.csv'):
         transformed_coords = pd.merge(transformed_coords,msi_dimred[['spot_id','color']],on='spot_id')
     else :
         transformed_coords['color']=1
-    print(transformed_coords)
     # plot coordinates on top of H&E image
     plt.imshow(out_image)
     plt.scatter(x=transformed_coords['x'],y=transformed_coords['y'],c=transformed_coords['color'],s=0.1,alpha=0.5)
@@ -134,7 +132,6 @@ def run_coreg(sample):
             msi_he_img = None
         else :
             msi_he_img = msi_he_img[0]
-        print(msi_he_img)
     else :
         msi_he_img = None
 
