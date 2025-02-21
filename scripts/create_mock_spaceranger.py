@@ -16,7 +16,6 @@ def create_mock_spaceranger(
     msi_image_path="msi_he.png",
     msi_coord_fname="msi_coords.csv",
     msi_spot_prefix="MSI", 
-    msi_feat_prefix="mz",
     visium_sf_json_path=None,
     msi_peak_data_path=None,
     verbose=True
@@ -60,7 +59,7 @@ def create_mock_spaceranger(
     msi_coords['y'] = msi_coords['y']/scale_factor
     msi_coords['x_2'] = msi_coords['x']
     msi_coords['y_2'] = msi_coords['y']
-    msi_coords = msi_coords.set_index('spot_id',drop=False)
+    msi_coords.set_index('spot_id', drop=False, inplace=True)
 
     # Add "in_tissue" column
     msi_coords["in_tissue"] = 1
@@ -78,8 +77,8 @@ def create_mock_spaceranger(
     msi_tissue_pos["barcode"] = msi_spot_prefix + "_" + sample_name + "_" + msi_tissue_pos["barcode"].astype(str)
 
     msi_tissue_pos = msi_tissue_pos[['barcode','in_tissue','array_row','array_col','pxl_row_in_fullres','pxl_col_in_fullres']]
+
     # Write tissue_positions.csv
-    
     msi_tissue_pos.to_csv(os.path.join(spatial_path, "tissue_positions_list.csv"),index=False,header=False)
     if verbose:
         print(f"The new MSI coordinate file has been saved, containing {len(msi_tissue_pos)} spots/pixels.")
@@ -110,22 +109,22 @@ def create_mock_spaceranger(
     # Read MSI peak data file
     if verbose:
         print("Reading MSI peak data file...")
-    msi_peaks = pd.read_csv(msi_peak_data_path, header=0,index_col=0)
-   
+    msi_peaks = pd.read_csv(msi_peak_data_path, header=0)
+    msi_peaks.set_index('spot_id', drop=True, inplace = True)
+
     # Create feature IDs
     msi_peaks_features = pd.DataFrame(
-        {"id1": [msi_feat_prefix + "_" + col for col in msi_peaks.columns[1:]]}
+        {"id1": msi_peaks.columns}
     )
-    msi_peaks_features["id2"] = msi_peaks_features["id1"]
 
     # Create barcode IDs
-    msi_peaks_barcodes = msi_spot_prefix + "_" + sample_name + "_" + msi_coords.index.astype(str)
+    msi_peaks_barcodes = msi_spot_prefix + "_" + sample_name + "_" + msi_peaks.index.astype(str)
 
     # Prepare MSI peak data matrix
     if verbose:
         print("Preparing MSI peak data...")
     
-    msi_peaks_matrix = msi_peaks.iloc[:, 1:].transpose().copy()  # Select and transpose data
+    msi_peaks_matrix = msi_peaks.transpose().copy()  # Select and transpose data
     msi_peaks_matrix.index = msi_peaks_features["id1"].tolist()  # Set row names
     msi_peaks_matrix.columns = msi_peaks_barcodes.tolist()  # Set column names
 
