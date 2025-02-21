@@ -196,15 +196,18 @@ def server(input, output, session):
         if glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*') != []:
             msi_he_img = glob.glob('input/'+input.pick_sample()+'/msi/MSI_HE.*')
             msi_he_img = [x for x in msi_he_img if any(ext in x for ext in ['tiff','png','jpg'])]
-        if not (msi_he_img is []):
-            return('MSI H&E image detected')
+            if not (msi_he_img is []):
+                return('MSI H&E image detected')
+            else:
+                return('No MSI H&E image detected')
         else:
-            return('MSI H&E image detected')
+            return('No MSI H&E image detected')
     
     # Update choices for dim reduction based on whether there's an MSI H&E
     @reactive.event(input.pick_sample)
     def dimred_options():
-        msi_intensities = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_intensities.csv',index_col=0)
+        msi_intensities = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_intensities.csv')
+        msi_intensities.set_index('spot_id', drop=True, inplace=True)
         ui.update_selectize("peak_choice", choices=list(msi_intensities.columns))
         ui.update_selectize("peak_choices", choices=list(msi_intensities.columns))
         return msi_intensities
