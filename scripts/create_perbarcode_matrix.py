@@ -27,19 +27,39 @@ def estimate_interspot_distance(data):
     return(min(distances)/2)
 
 # group MSI coordinates which fall within a Visium spot extended radius
-def group_msi_perspot(msi_obj,visium_allcoords,visium_index,sample_name):
+def group_msi_perspot(msi_obj,
+                      visium_allcoords,
+                      visium_index,
+                      sample_name,
+                      verbose = True):
 
     # get minimum distance between spots to find extended Visium radius
     min_distance = estimate_interspot_distance(visium_allcoords)
     # find distance from all MSI pixels to all Visium spots
+    if verbose:
+        print("Calculating distances between MSI pixels and Visium spots...")
+
     spot_distances = pd.DataFrame(distance_matrix(visium_allcoords,msi_obj.obsm['spatial']),columns=msi_obj.obs.index)
     spot_distances['visium_spot'] = visium_index
 
     # convert to long format and filter to those within the extended Visium radius
+    if verbose:
+        print("Grouping MSI pixels by Visium spot...")
+
     spot_distances_long = pd.wide_to_long(spot_distances, i="visium_spot",stubnames='MSI_' + sample_name,j='MSI_spot', sep='_',suffix=r".+")
     spot_distances_long.columns = ['distance']
     close_points = spot_distances_long[spot_distances_long['distance'] < min_distance].reset_index()
     close_points['MSI_spot'] = ['MSI_'+ sample_name + "_" +str(spot_id) for spot_id in close_points['MSI_spot']]
+    matched_msi = close_points['MSI_spot'].nunique()
+    matched_visium = close_points['visium_spot'].nunique()
+    unmatched_visium = len(list(set([x for x in visium_index if x not in list(close_points['visium_spot'])])))
+    unmatched_msi = len(list(set([x for x in msi_obj.obs.index if x not in list(close_points['MSI_spot'])])))
+    if verbose:
+        print("Number of MSI pixels matching to Visium spots: "+str(matched_msi))
+        print("Number of Visium spots matching to MSI pixels: "+str(matched_visium))
+        print("Number of MSI pixels not matching to Visium spots: "+str(unmatched_msi))
+        print("Number of Visium spots not matching to MSI pixels: "+str(unmatched_visium))
+
     return(close_points)
 
 # helper function to get mean for each group
@@ -47,41 +67,68 @@ def group_mean(group):
     return np.mean(group, axis=0)
 
 # combine MSI pixels in one Visium spot and take average
-def create_mean_intensity_table(msi_obj,visium_allcoords,visium_index,sample_name):
+def create_mean_intensity_table(
+        msi_obj,
+        visium_allcoords,
+        sample_name = 'sample1',
+        verbose = True):
 
+    """
+    Aggregates MSI intensities per Visium spot.
+
+    Args:
+        msi_obj: Path to Space Ranger-style output from stage 2 of snakemake pipeline.
+        visium_allcoords: DataFrame of Visium coordinates as read from Space Ranger output (pxl_col_in_fullres and pxl_row_in_fullres). The row index should be the spot barcodes.
+        sample_name: Name of sample which will be used to rename MSI pixels for uniqueness. Defaults to "sample1".
+        verbose (bool, optional): Print informational messages during execution. Defaults to True.
+
+    Returns:
+        None
+    """
     # get all points grouped by Visium spot
-    close_points = group_msi_perspot(msi_obj,visium_allcoords,visium_index,sample_name)
+    close_points = group_msi_perspot(msi_obj,
+                                     visium_allcoords,
+                                     visium_allcoords.index,
+                                     sample_name,
+                                     verbose = verbose)
     msi_data = msi_obj.X
     # convert to sparse format
     msi_data = pd.DataFrame.sparse.from_spmatrix(msi_data)
     msi_data.index = msi_obj.obs.index
     msi_data.columns = msi_obj.var['gene_ids']
     close_points.set_index('MSI_spot',inplace=True,drop=False)
+    close_points.to_csv('matched_Visium_MSI_IDs.csv', index=False)
     # get MSI intensities for all grouped points
     intensity_matrix = close_points.merge(msi_data,left_index=True,right_index=True)
 
     # group by Visium spot and take mean for each peak
-    intensity_matrix_mean = intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1).groupby(['visium_spot']).apply(lambda x: group_mean(x.values))
+    if verbose:
+        print("Aggregating MSI pixels per Visium spot by "+snakemake.params['agg_fn']+"...")
+    if snakemake.params['agg_fn'] == 'sum':
+        intensity_matrix_mean = intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1).groupby(['visium_spot']).sum()
+    else :
+        intensity_matrix_mean = intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1).groupby(['visium_spot']).apply(lambda x: group_mean(x.values))
+    
     intensity_matrix_mean_df = pd.DataFrame.from_dict(dict(zip(intensity_matrix_mean.index, intensity_matrix_mean.values))).transpose()
     intensity_matrix_mean_df.columns = msi_obj.var['gene_ids']
 
     return(intensity_matrix_mean_df)
 
 # create spaceranger-style output
-def create_mock_spaceranger_mean_intensity(
+def create_mock_spaceranger_aggregated_intensity(
     mean_intensity_table,
-    output_folder_name="mock_spaceranger",
-    msi_image_path="msi_he.png",
+    output_folder_name="mock_spaceranger_aggregated",
+    msi_image_path="MSI_HE.jpg",
     visium_dir=None,
     verbose=True
 ):
     """
-    Creates mock Space Ranger formatted output data for a sample.
+    Creates mock Space Ranger formatted output data aggregated to give matching observations between modalities.
 
     Args:
-        mean_intensity_table: DataFrame with MSI intensity per Visium spot
-        output_folder_name (str, optional): Name of the output folder. Defaults to "mock_spaceranger".
-        msi_image_path: Path to the MSI image file. Defaults to "msi_he.png".
+        mean_intensity_table: DataFrame with aggregated MSI intensity per Visium spot
+        output_folder_name (str, optional): Name of the output folder. Defaults to "mock_spaceranger_aggregated".
+        msi_image_path: Path to the MSI image file. Defaults to "MSI_HE.jpg".
         visium_dir: Path to the Visium spaceranger output.
         verbose (bool, optional): Print informational messages during execution. Defaults to True.
 
@@ -97,11 +144,9 @@ def create_mock_spaceranger_mean_intensity(
     filtered_path = os.path.join(output_path, "filtered_feature_bc_matrix")
     Path(filtered_path).mkdir(parents=True, exist_ok=True)
 
-# get Visium scale factors and copy to MSI
+    # get Visium scale factors and copy to MSI
     with open(visium_dir+"/spatial/scalefactors_json.json", "r") as f:
-        st_json = json.load(f)
-
-    msi_json = st_json
+        msi_json = json.load(f)
 
     # Get Visium coordinates which had an MSI pixel mapped to it
     if verbose:
@@ -109,6 +154,7 @@ def create_mock_spaceranger_mean_intensity(
     
     visium_coords = pd.read_csv(visium_dir+"/spatial/tissue_positions_list.csv",header=None,index_col=0)
     msi_tissue_pos = visium_coords.loc[list(mean_intensity_table.index),:]
+    msi_tissue_pos[1]=1
 
     # Write tissue_positions.csv
     msi_tissue_pos.to_csv(os.path.join(spatial_path, "tissue_positions_list.csv"),index=True,header=False)
@@ -218,14 +264,23 @@ def create_mock_spaceranger_mean_intensity(
 def main():
     sample = snakemake.params['sample']
     msi_obj = scanpy.read_visium('output/'+sample+'/spaceranger/',library_id='myLib')
-    visium_obj = scanpy.read_visium("input/"+sample+"/visium/",library_id='myLib')
-    visium_allcoords = pd.read_csv("input/"+sample+'/visium/spatial/tissue_positions_list.csv',header=None,index_col=0).iloc[:,[4,3]]
-    mean_intensity = create_mean_intensity_table(msi_obj,visium_allcoords,visium_allcoords.index,sample)
-    create_mock_spaceranger_mean_intensity(mean_intensity,
-                                        'output/'+sample+'/spaceranger_meanIntensity/',
+    if os.path.isfile('input/'+sample+'/visium/spatial/tissue_positions.csv'):
+        visium_allcoords = pd.read_csv("input/"+sample+'/visium/spatial/tissue_positions.csv',index_col=0)
+    else :
+        visium_allcoords = pd.read_csv("input/"+sample+'/visium/spatial/tissue_positions_list.csv',header=None,index_col=0)
+    visium_allcoords.columns = ['in_tissue','array_row','array_col','pxl_row_in_fullres','pxl_col_in_fullres']
+    if snakemake.params['only_within_tissue']:
+        visium_allcoords = visium_allcoords[visium_allcoords['in_tissue']==1]
+
+    mean_intensity = create_mean_intensity_table(msi_obj,
+                                                 visium_allcoords.iloc[:,[4,3]],
+                                                 sample,
+                                                 verbose = snakemake.params['verbose'])
+    create_mock_spaceranger_aggregated_intensity(mean_intensity,
+                                        'output/'+sample+'/spaceranger_aggregated/',
                                         'output/'+sample+'/spaceranger/spatial/tissue_hires_image.png',
-                                            visium_dir = "input/"+sample+"/visium/",
-                                            verbose=False)
+                                        visium_dir = "input/"+sample+"/visium/",
+                                        verbose=snakemake.params['verbose'])
     
 if __name__ == "__main__":
     main()

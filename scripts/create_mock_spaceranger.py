@@ -24,11 +24,11 @@ def create_mock_spaceranger(
     Creates mock Space Ranger formatted output data for a sample.
 
     Args:
+        sample (str): Name of sample which will be used to identify the relevant existing input/output files. Defaults to 'sample1'.
         output_folder_name (str, optional): Name of the output folder. Defaults to "mock_spaceranger".
         msi_image_path (str, optional): Path to the MSI image file. Defaults to "msi_he.png".
         msi_coord_fname (str, optional): Name of the MSI coordinate file. Defaults to "msi_coords.csv".
         msi_spot_prefix (str, optional): Prefix for spot IDs in the MSI data. Defaults to "MSI".
-        msi_feat_prefix (str, optional): Prefix for feature IDs in the MSI data. Defaults to "mz".
         visium_sf_json_path (str): Path to the Visium scalefactor JSON file.
         msi_peak_data_path (str, optional): Path to the MSI peak data file.
         verbose (bool, optional): Print informational messages during execution. Defaults to True.
@@ -54,6 +54,7 @@ def create_mock_spaceranger(
     # Read MSI coordinates
     if verbose:
         print("Reading MSI coordinate file...")
+        
     msi_coords = pd.read_csv(msi_coord_fname)
     msi_coords['x'] = msi_coords['x']/scale_factor
     msi_coords['y'] = msi_coords['y']/scale_factor
