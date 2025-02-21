@@ -18,18 +18,31 @@ rule all:
     input:
         expand("output/{sample}/"+output_file+"/filtered_feature_bc_matrix.h5", sample=samples)
         
+rule check_inputs:
+    message:
+        'Checking inputs.'
+    conda: 'magpie'
+    input:
+        "input/"
+    output:
+        "output/summary.csv"
+    script:
+        "scripts/check_inputs.py"
+
 rule perform_coreg:
     message:
         "Performing co-registration."
     conda: 'magpie'
     input:
-        "input/{sample}/msi/MSI_metadata.csv"
+        "input/{sample}/msi/MSI_metadata.csv",
+        "output/summary.csv"
     output:
         "output/{sample}/transformed.csv",
-        "output/{sample}/transformed_withCoords.png",
         "output/{sample}/transformed.png"
     params:
-        transform_type = 'TPS',
+        no_HE_transform = 'affine',
+        MSI2HE_transform = 'TPS',
+        HE2HE_transform = 'TPS',
         sample = "{sample}"
     script:
         "scripts/alter_data.py"
