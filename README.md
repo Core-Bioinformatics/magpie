@@ -44,7 +44,7 @@ The MAGPIE pipeline automatically detects the files in your input folder and mak
     ├── msi                    
     │   ├── MSI_intensities.csv              # Table of intensities with MSI peaks on columns and pixels on rows
     │   ├── MSI_metadata.csv                 # Table of metadata about MSI pixels, including x and y coordinate columns
-    │   │── MSI_HE.jpg                       # (OPTIONAL) intermediate MSI image to assist with coregistration
+    │   │── MSI_HE.[jpg,png,tiff]            # (OPTIONAL) intermediate MSI image to assist with coregistration
     ├── landmarks_MSI2HE.csv                 # (OPTIONAL) Table of identified landmarks between MSI image and MSI H&E image (added by shiny app or identified externally)
     ├── landmarks_MSI2HE.csv                 # (OPTIONAL) Table of identified landmarks between MSI H&E and Visium H&E image (added by shiny app or identified externally)
     └── landmarks_noHE.csv                   # (OPTIONAL) Table of identified landmarks between MSI image and Visium H&E (added by shiny app or identified externally). 
