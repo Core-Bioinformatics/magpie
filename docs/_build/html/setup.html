@@ -181,9 +181,14 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Individual pipeline steps</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="shiny-app/shiny-app.html">Magpie shiny app for landmark selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="snakemake-rules/snakemake-pipeline.html">Running the snakemake pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snakemake-rules/rule-1.html">Snakemake Rule 1: Transform coordinates to match between modalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snakemake-rules/rule-2.html">Snakemake Rule 2: Create spaceranger object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snakemake-rules/rule-3.html">Snakemake Rule 3: Match observations between modalities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial/SMA_tutorial.html">MAGPIE tutorial on SMA mouse brain sample</a></li>
 </ul>
 
     </div>
@@ -343,11 +348,22 @@
 <p>To run this pipeline, you need to have <code class="docutils literal notranslate"><span class="pre">Snakemake</span></code> installed along with several bioinformatics tools. We recommend using <code class="docutils literal notranslate"><span class="pre">conda</span></code> for package management.</p>
 <section id="install-conda">
 <h2>1. Install Conda<a class="headerlink" href="#install-conda" title="Link to this heading">#</a></h2>
-<p>If you haven’t already, install Miniconda:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh
+<p>If you haven’t already, install Miniconda using instructions at <a class="reference external" href="https://docs.anaconda.com/miniconda/install/">https://docs.anaconda.com/miniconda/install/</a>, for example using the below.</p>
+<p>For Mac:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-O<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh
+bash<span class="w"> </span>~/Miniconda3-latest-MacOSX-arm64.sh
 </pre></div>
 </div>
+<p>For Linux:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash<span class="w"> </span>~/Miniconda3-latest-Linux-x86_64.sh
+</pre></div>
+</div>
+<p>For Windows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe<span class="w"> </span>--output<span class="w"> </span>.<span class="se">\D</span>ownloads<span class="se">\M</span>iniconda3-latest-Windows-x86_64.exe
+</pre></div>
+</div>
+<p>Then launch the installer from Downloads and follow the steps</p>
 </section>
 <section id="create-conda-environment">
 <h2>2. Create Conda Environment<a class="headerlink" href="#create-conda-environment" title="Link to this heading">#</a></h2>
@@ -373,6 +389,7 @@ bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>magpie_environment.yml
 </pre></div>
 </div>
+<p>The pipeline has been primary developed and tested on Mac so there may be some difficulties with installation on Windows and Linux and packages may need to be installed manually.</p>
 </section>
 <section id="activate-environment">
 <h2>3. Activate Environment<a class="headerlink" href="#activate-environment" title="Link to this heading">#</a></h2>

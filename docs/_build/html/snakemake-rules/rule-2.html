@@ -181,9 +181,14 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Individual pipeline steps</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../shiny-app/shiny-app.html">Magpie shiny app for landmark selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="snakemake-pipeline.html">Running the snakemake pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rule-1.html">Snakemake Rule 1: Transform coordinates to match between modalities</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Snakemake Rule 2: Create spaceranger object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rule-3.html">Snakemake Rule 3: Match observations between modalities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/SMA_tutorial.html">MAGPIE tutorial on SMA mouse brain sample</a></li>
 </ul>
 
     </div>
@@ -357,13 +362,17 @@
 <section id="code-from-snakemake-file">
 <h2>Code (from Snakemake file)<a class="headerlink" href="#code-from-snakemake-file" title="Link to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rule</span> <span class="n">make_spaceranger</span><span class="p">:</span>
+    <span class="n">message</span><span class="p">:</span>
+        <span class="s2">&quot;Creating spaceranger formatted output.&quot;</span>
+    <span class="n">conda</span><span class="p">:</span> <span class="s1">&#39;magpie&#39;</span>
     <span class="nb">input</span><span class="p">:</span>
         <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/transformed.csv&quot;</span><span class="p">,</span>
         <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/transformed.png&quot;</span>
     <span class="n">output</span><span class="p">:</span>
         <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/spaceranger/filtered_feature_bc_matrix.h5&quot;</span>
     <span class="n">params</span><span class="p">:</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{sample}</span><span class="s2">&quot;</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{sample}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">script</span><span class="p">:</span>
         <span class="s2">&quot;scripts/create_mock_spaceranger.py&quot;</span>
 </pre></div>

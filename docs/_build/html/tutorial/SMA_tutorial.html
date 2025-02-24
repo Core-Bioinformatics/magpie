@@ -1,0 +1,1114 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MAGPIE tutorial on SMA mouse brain sample &#8212; Magpie Pipeline Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial/SMA_tutorial';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Snakemake Rule 3: Match observations between modalities" href="../snakemake-rules/rule-3.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/magpie_logo.png" class="logo__image only-light" alt="Magpie Pipeline Documentation - Home"/>
+    <img src="../_static/magpie_logo.png" class="logo__image only-dark pst-js-only" alt="Magpie Pipeline Documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    MAGPIE Pipeline Documentation
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../pipeline-overview.html">Pipeline Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup Instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs.html">MAGPIE directory structure</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Pipeline outputs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../results/results-summary.html">Pipeline Outputs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Individual pipeline steps</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../shiny-app/shiny-app.html">Magpie shiny app for landmark selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snakemake-rules/snakemake-pipeline.html">Running the snakemake pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snakemake-rules/rule-1.html">Snakemake Rule 1: Transform coordinates to match between modalities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snakemake-rules/rule-2.html">Snakemake Rule 2: Create spaceranger object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snakemake-rules/rule-3.html">Snakemake Rule 3: Match observations between modalities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">MAGPIE tutorial on SMA mouse brain sample</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tutorial/SMA_tutorial.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>MAGPIE tutorial on SMA mouse brain sample</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input-format">Input format</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#landmark-selection-through-magpie-shiny-app">Landmark selection through MAGPIE shiny app</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coregistration-with-magpie-snakemake-pipeline">Coregistration with MAGPIE snakemake pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-selection">Parameter selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-snakemake-workflow">Running the snakemake workflow</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#i-input-checking">i) Input checking</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ii-coregistration">ii) Coregistration</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#iii-saving-in-space-ranger-format">iii) Saving in Space Ranger format</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#iii-aggregating-msi-pixels-to-match-visium-barcodes">iii) Aggregating MSI pixels to match Visium barcodes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="magpie-tutorial-on-sma-mouse-brain-sample">
+<h1>MAGPIE tutorial on SMA mouse brain sample<a class="headerlink" href="#magpie-tutorial-on-sma-mouse-brain-sample" title="Link to this heading">#</a></h1>
+<p>We showcase how to run the MAGPIE pipeline on one sample from <em>Spatial multimodal analysis of transcriptomes and metabolomes in tissues</em> by Marco Vicari, Reza Mirzazadeh, Anna Nilsson et al, published in Nature Communications (<a class="reference external" href="https://www.nature.com/articles/s41587-023-01937-y">https://www.nature.com/articles/s41587-023-01937-y</a>).</p>
+<section id="input-format">
+<h2>Input format<a class="headerlink" href="#input-format" title="Link to this heading">#</a></h2>
+<p>The directory from which you run the pipeline should have the following general structure:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>├── Snakefile
+├── magpie_shiny_app.py
+├── figures  
+│   ├── magpie_logo.png
+├── scripts
+│   ├── alter_data.py
+│   ├── create_mock_spaceranger.py
+│   ├── create_perbarcode_matrix.py
+├── input
+│   ├── (optional) exclude.txt
+│   ├── (optional) selected.txt
+│   ├── ... 
+</pre></div>
+</div>
+<p>As described in more detail in our documentation, for an individual sample the inputs should follow this structure:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[sample name]
+├── visium                               # Spaceranger outputs
+│   ├── filtered_feature_bc_matrix.h5
+│   ├── spatial
+│   │   ├── aligned_fiducials.jpg
+│   │   ├── detected_tissue_image.jpg
+│   │   ├── scalefactors_json.json
+│   │   ├── tissue_hires_image.png
+│   │   ├── tissue_lores_image.png
+│   │   ├── tissue_positions_list.csv
+├── msi                    
+│   ├── MSI_intensities.csv              # Table of intensities with MSI peaks on columns and pixels on rows
+│   ├── MSI_metadata.csv                 # Table of metadata about MSI pixels, including x and y coordinate columns
+│   │── MSI_HE.[jpg,png,tiff]            # (OPTIONAL) intermediate MSI image to assist with coregistration
+├── landmarks_MSI2HE.csv                 # (OPTIONAL) Table of identified landmarks between MSI image and MSI H&amp;E image
+├── landmarks_MSI2HE.csv                 # (OPTIONAL) Table of identified landmarks between MSI H&amp;E and Visium H&amp;E image
+└── landmarks_noHE.csv                   # (OPTIONAL) Table of identified landmarks between MSI image and Visium H&amp;E
+</pre></div>
+</div>
+<p>For this dataset we do not have an intermediate MSI image available so we will follow the ‘noHE’ version of the pipeline.</p>
+<p>The Visium data is saved in the Space Ranger format and the MSI data is separated into a metadata file containing spot_id, x and y coordinates and an intensity table with pixels/spots on the rows and peaks on the columns. The first column of both tables should be the ID of each pixel, in the same order in both cases.</p>
+<p>The metadata and intensity tables for this sample are shown below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;input/V11L12-038_D1/msi/MSI_metadata.csv&#39;</span><span class="p">)</span>
+<span class="n">meta</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>spot_id</th>
+      <th>x</th>
+      <th>y</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>pixel_14</td>
+      <td>-14</td>
+      <td>67</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>pixel_15</td>
+      <td>-15</td>
+      <td>67</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>pixel_16</td>
+      <td>-16</td>
+      <td>67</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>pixel_17</td>
+      <td>-17</td>
+      <td>67</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>pixel_18</td>
+      <td>-18</td>
+      <td>67</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">intensities</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;input/V11L12-038_D1/msi/MSI_intensities.csv&#39;</span><span class="p">)</span>
+<span class="n">intensities</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">5</span><span class="p">,:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>spot_id</th>
+      <th>mz-108.901945</th>
+      <th>mz-108.902095</th>
+      <th>mz-109.02966</th>
+      <th>mz-109.07286</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>pixel_14</td>
+      <td>194565.2656</td>
+      <td>147422.4375</td>
+      <td>107558.41410</td>
+      <td>0.00000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>pixel_15</td>
+      <td>585243.8750</td>
+      <td>386686.1875</td>
+      <td>93422.78125</td>
+      <td>0.00000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>pixel_16</td>
+      <td>268511.0000</td>
+      <td>199858.3125</td>
+      <td>140381.84380</td>
+      <td>79260.86719</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>pixel_17</td>
+      <td>346582.0938</td>
+      <td>285972.9375</td>
+      <td>117012.73440</td>
+      <td>0.00000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>pixel_18</td>
+      <td>487304.3750</td>
+      <td>354217.7188</td>
+      <td>29423.32617</td>
+      <td>8445.78418</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>This spatial shape of the data can be plotted out:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span><span class="n">y</span><span class="o">=</span><span class="n">meta</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span><span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.PathCollection at 0x142f2e6b0&gt;
+</pre></div>
+</div>
+<img alt="../_images/19ab3a8f0df541a7dd999717a58b779a433958fab5a2ff28d625363ba5f5c2de.png" src="../_images/19ab3a8f0df541a7dd999717a58b779a433958fab5a2ff28d625363ba5f5c2de.png" />
+</div>
+</div>
+</section>
+<section id="landmark-selection-through-magpie-shiny-app">
+<h2>Landmark selection through MAGPIE shiny app<a class="headerlink" href="#landmark-selection-through-magpie-shiny-app" title="Link to this heading">#</a></h2>
+<p>After navigating in command line to the outer directory described above containing the magpie_shiny_app.py script, you can launch the app by running:</p>
+<p>After running this line, you will be prompted to open the app in a browser which will look like this:</p>
+<p><img alt="app_options" src="../_images/first_app_view.png" /></p>
+<p>In order to identify useful landmarks for coregistration from the MSI data itself, we need to identify a way to represent the data where morphological features can be found and mapped to corresponding features in the Visium H&amp;E image. This could be achieved through the first principal component (i.e. the strongest source of variability within the dataset), through a combination of the first 3 principal components or using individual features which are known to mark patterns of interest. Such dimensionality reduction can be run on all features (peaks) or on other a subset of interest according to user preference. In this case we will use the first PC (the PC1 option) on all features (default if no peaks are individually selected) as our representation which gives us the following:</p>
+<p><img alt="app_options" src="../_images/pc1_representation.png" /></p>
+<p>As expected, the app identified that no intermediate H&amp;E image from the MSI section was provided so we are only shown the MSI data itself and the Visium H&amp;E image. Using this representation we can see several similarities between the two sections which will allow to identify useful landmarks for coregistration. We can save this dimensionality reduction to help us assess the coregistration later using the ‘Save MSI colouring for later analysis’ button which will save a table to <em>input/[sample_name]/msi/MSI_dimreduction.csv</em>.</p>
+<p>After selecting an appropriate dimensionality reduction, we can start choosing landmarks between the two sections for coregistration which will be overlaid on the images:</p>
+<p><img alt="app_options" src="../_images/landmark_selection.png" /></p>
+<p>You can select as many landmarks as you wish but we recommend to aim for at least 10 as our benchmarking showed improved performed when additional landmarks before 10. The landmarks you have selected will be shown in a table like below. Make sure to press the ‘Download landmarks’ button when you’re finished which will save the landmarks to be used by the snakemake pipeline.</p>
+<p><img alt="app_options" src="../_images/landmark_table.png" /></p>
+<p>This is everything you need to move onto the snakemake pipeline. If you’d prefer to use landmarks identified through another method (e.g. an automated method like ELD) just make sure you save them in the same format as used by the MAGPIE shiny app, so you have a file called input/[sample_name]/landmarks_noHE.csv if you do not have an intermediate MSI image like in this example or files input/[sample_name]/landmarks_MSI2HE.csv and input/[sample_name]/landmarks_HE2HE.csv if you do. In our example the resulting file will look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X_left</span><span class="p">,</span><span class="n">Y_left</span><span class="p">,</span><span class="n">X_right</span><span class="p">,</span><span class="n">Y_right</span>
+<span class="o">-</span><span class="mf">43.392404913273495</span><span class="p">,</span><span class="mf">30.714144841259213</span><span class="p">,</span><span class="mf">990.5500732301224</span><span class="p">,</span><span class="mf">1098.4644936810546</span>
+<span class="o">-</span><span class="mf">51.68596463501392</span><span class="p">,</span><span class="mf">37.950035028777826</span><span class="p">,</span><span class="mf">816.7284008300779</span><span class="p">,</span><span class="mf">929.8816862543379</span>
+<span class="o">-</span><span class="mf">32.804881864243185</span><span class="p">,</span><span class="mf">51.00993439161629</span><span class="p">,</span><span class="mf">1290.787507375654</span><span class="p">,</span><span class="mf">613.7889223292436</span>
+<span class="o">-</span><span class="mf">18.33526703056841</span><span class="p">,</span><span class="mf">25.772561298563573</span><span class="p">,</span><span class="mf">1638.430852175743</span><span class="p">,</span><span class="mf">1209.0969610548377</span>
+<span class="o">-</span><span class="mf">61.03827666165736</span><span class="p">,</span><span class="mf">39.258097458857044</span><span class="p">,</span><span class="mf">606.0354645875999</span><span class="p">,</span><span class="mf">896.1032592825652</span>
+<span class="o">-</span><span class="mf">40.39260671604824</span><span class="p">,</span><span class="mf">6.07889367218634</span><span class="p">,</span><span class="mf">1090.6292179452998</span><span class="p">,</span><span class="mf">1681.0669563632155</span>
+<span class="o">-</span><span class="mf">54.68576283223918</span><span class="p">,</span><span class="mf">15.785575631052776</span><span class="p">,</span><span class="mf">706.114609302777</span><span class="p">,</span><span class="mf">1459.8020216156497</span>
+<span class="o">-</span><span class="mf">45.68636824056341</span><span class="p">,</span><span class="mf">53.22119047946254</span><span class="p">,</span><span class="mf">974.7481030119368</span><span class="p">,</span><span class="mf">558.3177033800923</span>
+<span class="o">-</span><span class="mf">13.041505506053255</span><span class="p">,</span><span class="mf">24.27762972938811</span><span class="p">,</span><span class="mf">1749.0446437030444</span><span class="p">,</span><span class="mf">1248.4535712832144</span>
+<span class="o">-</span><span class="mf">11.100459613731026</span><span class="p">,</span><span class="mf">47.52174636781049</span><span class="p">,</span><span class="mf">1764.84661392123</span><span class="p">,</span><span class="mf">781.1324907502565</span>
+</pre></div>
+</div>
+</section>
+<section id="coregistration-with-magpie-snakemake-pipeline">
+<h2>Coregistration with MAGPIE snakemake pipeline<a class="headerlink" href="#coregistration-with-magpie-snakemake-pipeline" title="Link to this heading">#</a></h2>
+<p>Now that you have identified and saved landmarks for the coregistration, the remaining aspects of the coregistration pipeline can be performed using the MAGPIE snakemake workflow.</p>
+<p>From the same working directory as shown above, you can find a file called Snakefile which describes the pipeline and the parameters for each stage</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">include_barcode_matrix</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;input/selected.txt&#39;</span><span class="p">):</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;input/selected.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="n">glob_wildcards</span><span class="p">(</span><span class="s2">&quot;input/</span><span class="si">{sample}</span><span class="s2">/msi&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sample</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;input/exclude.txt&#39;</span><span class="p">):</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;input/exclude.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">])))</span>
+
+<span class="k">if</span> <span class="n">include_barcode_matrix</span><span class="p">:</span>
+    <span class="n">output_file</span> <span class="o">=</span> <span class="s2">&quot;spaceranger_aggregated&quot;</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">output_file</span> <span class="o">=</span> <span class="s2">&quot;spaceranger&quot;</span>
+    
+<span class="n">rule</span> <span class="nb">all</span><span class="p">:</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="n">expand</span><span class="p">(</span><span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/&quot;</span><span class="o">+</span><span class="n">output_file</span><span class="o">+</span><span class="s2">&quot;/filtered_feature_bc_matrix.h5&quot;</span><span class="p">,</span> <span class="n">sample</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span>
+        
+<span class="n">rule</span> <span class="n">check_inputs</span><span class="p">:</span>
+    <span class="n">message</span><span class="p">:</span>
+        <span class="s1">&#39;Checking inputs.&#39;</span>
+    <span class="n">conda</span><span class="p">:</span> <span class="s1">&#39;magpie&#39;</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s2">&quot;input/&quot;</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="s2">&quot;output/summary.csv&quot;</span>
+    <span class="n">params</span><span class="p">:</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">script</span><span class="p">:</span>
+        <span class="s2">&quot;scripts/check_inputs.py&quot;</span>
+
+<span class="n">rule</span> <span class="n">perform_coreg</span><span class="p">:</span>
+    <span class="n">message</span><span class="p">:</span>
+        <span class="s2">&quot;Performing co-registration.&quot;</span>
+    <span class="n">conda</span><span class="p">:</span> <span class="s1">&#39;magpie&#39;</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s2">&quot;input/</span><span class="si">{sample}</span><span class="s2">/msi/MSI_metadata.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;output/summary.csv&quot;</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/transformed.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/transformed.png&quot;</span>
+    <span class="n">params</span><span class="p">:</span>
+        <span class="n">no_HE_transform</span> <span class="o">=</span> <span class="s1">&#39;affine&#39;</span><span class="p">,</span>
+        <span class="n">MSI2HE_transform</span> <span class="o">=</span> <span class="s1">&#39;affine&#39;</span><span class="p">,</span>
+        <span class="n">HE2HE_transform</span> <span class="o">=</span> <span class="s1">&#39;TPS&#39;</span><span class="p">,</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{sample}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">script</span><span class="p">:</span>
+        <span class="s2">&quot;scripts/alter_data.py&quot;</span>
+
+<span class="n">rule</span> <span class="n">make_spaceranger</span><span class="p">:</span>
+    <span class="n">message</span><span class="p">:</span>
+        <span class="s2">&quot;Creating spaceranger formatted output.&quot;</span>
+    <span class="n">conda</span><span class="p">:</span> <span class="s1">&#39;magpie&#39;</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/transformed.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/transformed.png&quot;</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/spaceranger/filtered_feature_bc_matrix.h5&quot;</span>
+    <span class="n">params</span><span class="p">:</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{sample}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">script</span><span class="p">:</span>
+        <span class="s2">&quot;scripts/create_mock_spaceranger.py&quot;</span>
+
+<span class="n">rule</span> <span class="n">create_barcode_matrix</span><span class="p">:</span>
+    <span class="n">message</span><span class="p">:</span>
+        <span class="s2">&quot;Generating aggregated data.&quot;</span>
+    <span class="n">conda</span><span class="p">:</span> <span class="s1">&#39;magpie&#39;</span>
+    <span class="nb">input</span><span class="p">:</span>
+        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/spaceranger/filtered_feature_bc_matrix.h5&quot;</span>
+    <span class="n">output</span><span class="p">:</span>
+        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/spaceranger_aggregated/filtered_feature_bc_matrix.h5&quot;</span>
+    <span class="n">params</span><span class="p">:</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{sample}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">agg_fn</span> <span class="o">=</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">only_within_tissue</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">script</span><span class="p">:</span>
+        <span class="s2">&quot;scripts/create_perbarcode_matrix.py&quot;</span>
+</pre></div>
+</div>
+<p>Each ‘rule’ specifies a different stage of the pipeline and they are executed in the order</p>
+<p><code> check_inputs </code> -&gt; <code> perform_coreg </code> -&gt; <code> make_spaceranger </code> -&gt; <code> create_barcode_matrix </code></p>
+<section id="parameter-selection">
+<h3>Parameter selection<a class="headerlink" href="#parameter-selection" title="Link to this heading">#</a></h3>
+<p>There are several user-selected parameters to be aware of in this file:</p>
+<ol class="arabic simple">
+<li><p><code> include_barcode_matrix = False </code> specifies whether or not the final stage of the pipeline, where MSI observations are aggregated to form matching observations to Visium barcodes so that 1:1 mappings can be identified across both modalities. This stage is optional but can be very useful for downstream analysis. This part of the pipeline is the most time demanding so you may choose to run the pipeline without the step initially to check the success of the coregistration. The same step can also be performed within the semla package using the <code> CreateMultiModalObject </code> function.</p></li>
+<li><p>Within each stage you can set <code> verbose = True/False </code> to get more or less information about the different stages of the process as they are being executed.</p></li>
+<li><p>In the <code> perform_coreg </code> stage, a set of 3 parameters can be used <code> no_HE_transform </code>, <code> MSI2HE_transform  </code> and <code> HE2HE_transform </code>, each of which can be set to ‘affine’ or ‘TPS’ depending on whether you want to use a linear or non-linear transformation. We discuss in the manuscript the different circumstances where each choice can be advantageous. In this example, only the <code> no_HE_transform </code> will be used as we do not have an intermediate MSI image and it is set here to affine. Because we have both measurements taken from the same tissue section, it may make sense to choose a linear transformation as we will only see small alterations between sections rather than large deformations.</p></li>
+<li><p>In the <code> create_barcode_matrix </code> step, the <code> agg_fn </code> parameter specifies how MSI observations (for each pixel) will be aggregated to form a single observation per Visium barcode. The options are ‘mean’ or ‘sum’ and in this case we will use the mean.</p></li>
+<li><p>Finally, in <code> create_barcode_matrix </code> you can choose whether only Visium barcodes within the tissue are returned or whether to not perform filtering at this stage.</p></li>
+</ol>
+<p>Once all of these parameters have been set, you can run the pipeline!</p>
+</section>
+<section id="running-the-snakemake-workflow">
+<h3>Running the snakemake workflow<a class="headerlink" href="#running-the-snakemake-workflow" title="Link to this heading">#</a></h3>
+<p>From within the same working directory, you can use the same following line to run the pipeline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">snakemake</span> <span class="o">-</span><span class="n">j</span> <span class="p">[</span><span class="n">number</span> <span class="n">of</span> <span class="n">cores</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The command line output will look something like this for this dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Building DAG of jobs...
+Using shell: /bin/bash
+Provided cores: 1 (use --cores to define parallelism)
+Rules claiming more threads will be scaled down.
+Conda environments: ignored
+Job stats:
+job                      count
+---------------------  -------
+all                          1
+check_inputs                 1
+create_barcode_matrix        1
+make_spaceranger             1
+perform_coreg                1
+total                        5
+
+Select jobs to execute...
+
+[Mon Feb 24 10:13:07 2025]
+Job 4: Checking inputs.
+Reason: Missing output files: output/summary.csv
+
+Working on sample V11L12-038_D1
+Checking for intermediate MSI image...
+Checking metadata and intensity tables exist and can be read...
+Checking metadata contains spot_id, x and y columns...
+Checking intensity table begins with metadata column...
+Checking spot_id columns in metadata and intensity table match exactly
+Storing dimensions and examples of data
+Summary saved to output/summary.csv
+[Mon Feb 24 10:13:17 2025]
+Finished job 4.
+1 of 5 steps (20%) done
+Select jobs to execute...
+
+[Mon Feb 24 10:13:17 2025]
+Job 3: Performing co-registration.
+Reason: Missing output files: output/V11L12-038_D1/transformed.png, output/V11L12-038_D1/transformed.csv; Input files updated by another job: output/summary.csv
+
+No MSI H&amp;E image identified.
+Mapping MSI data to Visium H&amp;E
+Using affine transform to map MSI data to Visium H&amp;E
+Saving Visium H&amp;E with new MSI coordinates overlaid...
+Saving new MSI coordinates...
+[Mon Feb 24 10:13:22 2025]
+Finished job 3.
+2 of 5 steps (40%) done
+Select jobs to execute...
+
+[Mon Feb 24 10:13:22 2025]
+Job 2: Creating spaceranger formatted output.
+Reason: Missing output files: output/V11L12-038_D1/spaceranger/filtered_feature_bc_matrix.h5; Input files updated by another job: output/V11L12-038_D1/transformed.png, output/V11L12-038_D1/transformed.csv
+
+[Mon Feb 24 10:13:40 2025]
+Finished job 2.
+3 of 5 steps (60%) done
+Select jobs to execute...
+
+[Mon Feb 24 10:13:40 2025]
+Job 1: Generating aggregated data.
+Reason: Missing output files: output/V11L12-038_D1/spaceranger_aggregated/filtered_feature_bc_matrix.h5; Input files updated by another job: output/V11L12-038_D1/spaceranger/filtered_feature_bc_matrix.h5
+
+Calculating distances between MSI pixels and Visium spots...
+Grouping MSI pixels by Visium spot...
+Number of MSI pixels matching to Visium spots: 2388
+Number of Visium spots matching to MSI pixels: 2371
+Number of MSI pixels not matching to Visium spots: 696
+Number of Visium spots not matching to MSI pixels: 2621
+Aggregating MSI pixels per Visium spot by mean...
+Copying Visium coordinates which map to some MSI pixels...
+The new MSI coordinate file has been saved, containing 2371 spots/pixels.
+Creating JSON file...
+Copying tissue image...
+Spaceranger &#39;spatial&#39; folder content ready!
+Reading MSI peak data file...
+Preparing MSI peak data...
+Writing new feature-barcode matrix data...
+Spaceranger &#39;filtered_feature_bc_matrix&#39; folder content ready!
+Writing filtered_feature_bc_matrix.h5 file...
+Spaceranger &#39;filtered_feature_bc_matrix.h5&#39; file ready!
+Mock Space Ranger output completed for sample at path output/V11L12-038_D1/spaceranger_aggregated/
+[Mon Feb 24 10:16:55 2025]
+Finished job 1.
+4 of 5 steps (80%) done
+Select jobs to execute...
+
+[Mon Feb 24 10:16:55 2025]
+localrule all:
+    input: output/V11L12-038_D1/spaceranger_aggregated/filtered_feature_bc_matrix.h5
+    jobid: 0
+    reason: Input files updated by another job: output/V11L12-038_D1/spaceranger_aggregated/filtered_feature_bc_matrix.h5
+    resources: tmpdir=/var/folders/vb/gvs9l8xj3q10l987dbjg2bkw0000gq/T
+
+[Mon Feb 24 10:16:55 2025]
+Finished job 0.
+5 of 5 steps (100%) done
+Complete log: .snakemake/log/2025-02-24T101307.169550.snakemake.log
+</pre></div>
+</div>
+<p>We will now describe each of the outputs in turn corresponding to each stage of the pipeline.</p>
+<section id="i-input-checking">
+<h4>i) Input checking<a class="headerlink" href="#i-input-checking" title="Link to this heading">#</a></h4>
+<p>The output from the input checking stage (<code> check_inputs </code>) is a file output/summary.csv which looks like this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;output/summary.csv&#39;</span><span class="p">)</span>
+<span class="n">summary</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Subfolder</th>
+      <th>MSI image</th>
+      <th>Num pixels</th>
+      <th>Name of first pixel</th>
+      <th>Num peaks</th>
+      <th>Name of first peak</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>V11L12-038_D1</td>
+      <td>NaN</td>
+      <td>3084</td>
+      <td>pixel_14</td>
+      <td>3658</td>
+      <td>mz-108.901945</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>In this case, we ran the pipeline with only one sample but if we included multiple samples then they would all be shown as separate rows. The information we can get from this table is:</p>
+<ul class="simple">
+<li><p>For sample V11L12-038_D1 there is no intermediate MSI image. If there was, the name of the file would be listed in the MSI image column</p></li>
+<li><p>There are 3084 MSI pixels and the first one is called pixel_14</p></li>
+<li><p>There are 3658 peaks in the MSI dataset and the first one is called mz-108.901945</p></li>
+</ul>
+<p>This summary can help you see if the pipeline has correctly interpreted the structure of the data and that is has correctly assessed the presence of an intermediate MSI image. If it has not, you may need to alter the input structure according to the description above. This step will check the format more generally, making sure that all necessary files are included and readable and follow the right structure as required for subsequent steps.</p>
+</section>
+<section id="ii-coregistration">
+<h4>ii) Coregistration<a class="headerlink" href="#ii-coregistration" title="Link to this heading">#</a></h4>
+<p>The output from the coregistration stage (<code> perform_coreg </code>) is:</p>
+<ul class="simple">
+<li><p><em>transformed.csv</em> containing the newly mapped MSI coordinates which will now be in a comparable space to the Visium data</p></li>
+<li><p><em>transformed.png</em> which is the resulting H&amp;E image after mapping (in this case it will just be the original Visium image but if we had an intermediate MSI image it would be the adjusted version of this after coregistration)</p></li>
+<li><p><em>transformed_withCoords_VisiumHE.png</em> overlays the transformed MSI coordinates onto the Visium H&amp;E image so you can assess whether the coordinates overlap as you expect</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">transformed</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;output/V11L12-038_D1/transformed.csv&#39;</span><span class="p">)</span>
+<span class="n">transformed</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>spot_id</th>
+      <th>x</th>
+      <th>y</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>pixel_14</td>
+      <td>1735.755610</td>
+      <td>271.844118</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>pixel_15</td>
+      <td>1711.620147</td>
+      <td>271.225193</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>pixel_16</td>
+      <td>1687.484684</td>
+      <td>270.606269</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>pixel_17</td>
+      <td>1663.349221</td>
+      <td>269.987345</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>pixel_18</td>
+      <td>1639.213758</td>
+      <td>269.368421</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>This table contains the (x,y) coordinates for MSI pixel in the Visium coordinate space. We can see these then directly overlaid onto the Visium H&amp;E image itself:</p>
+<p><img alt="overlaidVisium" src="../_images/transformed_withCoords_VisiumHE.png" /></p>
+<p>As this MSI data was segmented to mostly contained only the actual tissue itself, we can see quite close overlap of the new MSI coordinates and the Visium data, suggesting the coregistration looks quite successful!</p>
+</section>
+<section id="iii-saving-in-space-ranger-format">
+<h4>iii) Saving in Space Ranger format<a class="headerlink" href="#iii-saving-in-space-ranger-format" title="Link to this heading">#</a></h4>
+<p>In order to aid compatability with a large number of downstream analysis options, we opted to save the transformed MSI data into a Space Ranger output style so any tool which had support for Visium could be used. The output of this stage is a folder named <em>spaceranger</em> which follows the standard structure, namely a <em>filtered_feature_bc_matrix.h5</em> and <em>spatial</em> folder.</p>
+<p>You can read the object using standard approaches like in scanpy, Seurat or semla, for example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="n">msi_obj</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_visium</span><span class="p">(</span><span class="s1">&#39;output/V11L12-038_D1/spaceranger/&#39;</span><span class="p">,</span><span class="n">library_id</span><span class="o">=</span><span class="s1">&#39;myLib&#39;</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">msi_obj</span><span class="p">,</span> <span class="n">img_key</span><span class="o">=</span><span class="s2">&quot;hires&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;mz-108.901945&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/dcbd7e61876533c1de6394f6a3016dda78ab89cb5c3ea43d159d8d79927eda4d.png" src="../_images/dcbd7e61876533c1de6394f6a3016dda78ab89cb5c3ea43d159d8d79927eda4d.png" />
+</div>
+</div>
+</section>
+<section id="iii-aggregating-msi-pixels-to-match-visium-barcodes">
+<h4>iii) Aggregating MSI pixels to match Visium barcodes<a class="headerlink" href="#iii-aggregating-msi-pixels-to-match-visium-barcodes" title="Link to this heading">#</a></h4>
+<p>The final stage of the pipeline creates expanded Visium spots (such that there are no gaps between spots) and aggregates the MSI pixels within each expanded Visium spot so that MSI pixels can be directly mapped to Visium spots. By default the mean of peak intensities for all pixels within a given expanded Visium spot radius is used but the sum can also be used. This output is also saved into a Space Ranger-style output and can be read in the same manner:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="n">msi_agg_obj</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_visium</span><span class="p">(</span><span class="s1">&#39;output/V11L12-038_D1/spaceranger_aggregated/&#39;</span><span class="p">,</span><span class="n">library_id</span><span class="o">=</span><span class="s1">&#39;myLib&#39;</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">msi_agg_obj</span><span class="p">,</span> <span class="n">img_key</span><span class="o">=</span><span class="s2">&quot;hires&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;mz-108.901945&#39;</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4bce58559ea9a1cb341ebbc13fda40f51fca6d26caee31d84b061af682df574f.png" src="../_images/4bce58559ea9a1cb341ebbc13fda40f51fca6d26caee31d84b061af682df574f.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scanpy</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="n">visium_obj</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">read_visium</span><span class="p">(</span><span class="s1">&#39;input/V11L12-038_D1/visium/&#39;</span><span class="p">,</span><span class="n">library_id</span><span class="o">=</span><span class="s1">&#39;myLib&#39;</span><span class="p">)</span>
+<span class="n">sc</span><span class="o">.</span><span class="n">pl</span><span class="o">.</span><span class="n">spatial</span><span class="p">(</span><span class="n">visium_obj</span><span class="p">,</span> <span class="n">img_key</span><span class="o">=</span><span class="s2">&quot;hires&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;Pcp4&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/anndata/_core/anndata.py:1756: UserWarning: Variable names are not unique. To make them unique, call `.var_names_make_unique`.
+  utils.warn_names_duplicates(&quot;var&quot;)
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/anndata/_core/anndata.py:1756: UserWarning: Variable names are not unique. To make them unique, call `.var_names_make_unique`.
+  utils.warn_names_duplicates(&quot;var&quot;)
+</pre></div>
+</div>
+<img alt="../_images/6cf3f51017ff1392591abbc5987d6bab18d049a76cfd267652bd32d722f36c3b.png" src="../_images/6cf3f51017ff1392591abbc5987d6bab18d049a76cfd267652bd32d722f36c3b.png" />
+</div>
+</div>
+<p>For this dataset, we can see that because the MSI resolution is lower than for Visium, not every Visium spot has a corresponding MSI pixel. In other examples we see that multiple MSI pixels correspond to the same Visium spot.</p>
+<p>Due to the matching observations, metabolomics and transcriptomics measurements can then be directly correlated or used as input to multi-omics methods such as MOFA as demonstrated within our manuscript <em>Spatially resolved integrative analysis of transcriptomic and metabolomic changes
+in tissue injury studie</em>s</p>
+</section>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./tutorial"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../snakemake-rules/rule-3.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Snakemake Rule 3: Match observations between modalities</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input-format">Input format</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#landmark-selection-through-magpie-shiny-app">Landmark selection through MAGPIE shiny app</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coregistration-with-magpie-snakemake-pipeline">Coregistration with MAGPIE snakemake pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-selection">Parameter selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-snakemake-workflow">Running the snakemake workflow</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#i-input-checking">i) Input checking</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#ii-coregistration">ii) Coregistration</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#iii-saving-in-space-ranger-format">iii) Saving in Space Ranger format</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#iii-aggregating-msi-pixels-to-match-visium-barcodes">iii) Aggregating MSI pixels to match Visium barcodes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Lovisa Franzén
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

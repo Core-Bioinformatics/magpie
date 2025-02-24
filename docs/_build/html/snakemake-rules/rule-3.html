@@ -63,6 +63,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'snakemake-rules/rule-3';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="MAGPIE tutorial on SMA mouse brain sample" href="../tutorial/SMA_tutorial.html" />
     <link rel="prev" title="Snakemake Rule 2: Create spaceranger object" href="rule-2.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -180,9 +181,14 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Individual pipeline steps</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../shiny-app/shiny-app.html">Magpie shiny app for landmark selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="snakemake-pipeline.html">Running the snakemake pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rule-1.html">Snakemake Rule 1: Transform coordinates to match between modalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rule-2.html">Snakemake Rule 2: Create spaceranger object</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Snakemake Rule 3: Match observations between modalities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/SMA_tutorial.html">MAGPIE tutorial on SMA mouse brain sample</a></li>
 </ul>
 
     </div>
@@ -355,12 +361,18 @@
 <section id="code-from-snakemake-file">
 <h2>Code (from Snakemake file)<a class="headerlink" href="#code-from-snakemake-file" title="Link to this heading">#</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rule</span> <span class="n">create_barcode_matrix</span><span class="p">:</span>
+    <span class="n">message</span><span class="p">:</span>
+        <span class="s2">&quot;Generating aggregated data.&quot;</span>
+    <span class="n">conda</span><span class="p">:</span> <span class="s1">&#39;magpie&#39;</span>
     <span class="nb">input</span><span class="p">:</span>
         <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/spaceranger/filtered_feature_bc_matrix.h5&quot;</span>
     <span class="n">output</span><span class="p">:</span>
-        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/spaceranger_meanIntensity/filtered_feature_bc_matrix.h5&quot;</span>
+        <span class="s2">&quot;output/</span><span class="si">{sample}</span><span class="s2">/spaceranger_aggregated/filtered_feature_bc_matrix.h5&quot;</span>
     <span class="n">params</span><span class="p">:</span>
-        <span class="n">sample</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{sample}</span><span class="s2">&quot;</span>
+        <span class="n">sample</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{sample}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">agg_fn</span> <span class="o">=</span> <span class="s1">&#39;mean&#39;</span><span class="p">,</span>
+        <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">only_within_tissue</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">script</span><span class="p">:</span>
         <span class="s2">&quot;scripts/create_perbarcode_matrix.py&quot;</span>
 </pre></div>
@@ -406,6 +418,15 @@
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Snakemake Rule 2: Create spaceranger object</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="../tutorial/SMA_tutorial.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">MAGPIE tutorial on SMA mouse brain sample</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>

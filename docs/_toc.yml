@@ -18,4 +18,6 @@ parts:
     - file: snakemake-rules/rule-1
     - file: snakemake-rules/rule-2
     - file: snakemake-rules/rule-3
-
+  - caption: Tutorial
+    chapters:
+    - file: tutorial/SMA_tutorial

@@ -181,9 +181,14 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Individual pipeline steps</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="shiny-app/shiny-app.html">Magpie shiny app for landmark selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="snakemake-rules/snakemake-pipeline.html">Running the snakemake pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snakemake-rules/rule-1.html">Snakemake Rule 1: Transform coordinates to match between modalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snakemake-rules/rule-2.html">Snakemake Rule 2: Create spaceranger object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snakemake-rules/rule-3.html">Snakemake Rule 3: Match observations between modalities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorial/SMA_tutorial.html">MAGPIE tutorial on SMA mouse brain sample</a></li>
 </ul>
 
     </div>
@@ -372,11 +377,11 @@
 ├── msi                    
 │   ├── MSI_intensities.csv              # Table of intensities with MSI peaks on columns and pixels on rows
 │   ├── MSI_metadata.csv                 # Table of metadata about MSI pixels, including x and y coordinate columns
-│   │── MSI_HE.jpg                       # (OPTIONAL) intermediate MSI image to assist with coregistration
+│   │── MSI_HE.[jpg,png,tiff]                       # (OPTIONAL) intermediate MSI image to assist with coregistration
 ├── landmarks_MSI2HE.csv                 # (OPTIONAL) Table of identified landmarks between MSI image and MSI H&amp;E image (added by shiny app or identified externally)
 ├── landmarks_MSI2HE.csv                 # (OPTIONAL) Table of identified landmarks between MSI H&amp;E and Visium H&amp;E image (added by shiny app or identified externally)
 └── landmarks_noHE.csv                   # (OPTIONAL) Table of identified landmarks between MSI image and Visium H&amp;E (added by shiny app or identified externally). 
-                                           landmarks_noHE.csv or landmarks_MSI2HE.csv and landmarks_MSI2HE.csv are required for coregistration.
+                                           Either landmarks_noHE.csv or both landmarks_MSI2HE.csv and landmarks_MSI2HE.csv are required for coregistration.
 </pre></div>
 </div>
 </section>
@@ -385,13 +390,13 @@
 <p>The MSI data should be split into an intensity table and a metadata table. The intensity table should look like this, with peaks on the columns and pixels on the rows.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head text-center"><p></p></th>
-<th class="head text-center"><p>101.2345</p></th>
-<th class="head text-center"><p>102.85754</p></th>
-<th class="head text-center"><p>303.35855</p></th>
-<th class="head text-center"><p>344.48575</p></th>
-<th class="head text-center"><p>321.38583</p></th>
-<th class="head text-center"><p>112.28485</p></th>
+<tr class="row-odd"><th class="head text-center"><p>spot_id</p></th>
+<th class="head text-center"><p>mz-101.2345</p></th>
+<th class="head text-center"><p>mz-102.85754</p></th>
+<th class="head text-center"><p>mz-303.35855</p></th>
+<th class="head text-center"><p>mz-344.48575</p></th>
+<th class="head text-center"><p>mz-321.38583</p></th>
+<th class="head text-center"><p>mz-112.28485</p></th>
 </tr>
 </thead>
 <tbody>
@@ -430,6 +435,7 @@
 </tbody>
 </table>
 </div>
+<p>The metadata table must contains columns spot_id, x and y (and can additionally include others) and the spot_id columns must exactly match the spot_id column in the intensity table.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head text-center"><p>spot_id</p></th>
@@ -462,28 +468,7 @@
 <td class="text-center"><p>treatment_1</p></td>
 <td class="text-center"><p>fibrotic</p></td>
 </tr>
-<tr class="row-odd"><td class="text-center"><p>pixel_3</p></td>
-<td class="text-center"><p>3</p></td>
-<td class="text-center"><p>1</p></td>
-<td class="text-center"><p>sample_2</p></td>
-<td class="text-center"><p>treatment_1</p></td>
-<td class="text-center"><p>fibrotic</p></td>
-</tr>
-<tr class="row-even"><td class="text-center"><p>pixel_4</p></td>
-<td class="text-center"><p>3</p></td>
-<td class="text-center"><p>2</p></td>
-<td class="text-center"><p>sample_2</p></td>
-<td class="text-center"><p>treatment_1</p></td>
-<td class="text-center"><p>normal</p></td>
-</tr>
-<tr class="row-odd"><td class="text-center"><p>pixel_5</p></td>
-<td class="text-center"><p>3</p></td>
-<td class="text-center"><p>3</p></td>
-<td class="text-center"><p>sample_2</p></td>
-<td class="text-center"><p>treatment_1</p></td>
-<td class="text-center"><p>fibrotic</p></td>
-</tr>
-<tr class="row-even"><td class="text-center"><p></p></td>
+<tr class="row-odd"><td class="text-center"><p></p></td>
 <td class="text-center"><p>…</p></td>
 <td class="text-center"><p>…</p></td>
 <td class="text-center"><p>…</p></td>
@@ -493,6 +478,7 @@
 </tbody>
 </table>
 </div>
+<p>The first stage of the snakemake pipeline will check all these criteria and save a summary table called summary.txt.</p>
 </section>
 </section>
 
