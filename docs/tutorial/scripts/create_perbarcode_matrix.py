@@ -97,7 +97,7 @@ def create_mean_intensity_table(
     msi_data.index = msi_obj.obs.index
     msi_data.columns = msi_obj.var['gene_ids']
     close_points.set_index('MSI_spot',inplace=True,drop=False)
-    close_points.to_csv('matched_Visium_MSI_IDs.csv', index=False)
+    close_points.iloc[:,:2].to_csv('output/'+sample_name+'/matched_Visium_MSI_IDs.csv', index=False)
     # get MSI intensities for all grouped points
     intensity_matrix = close_points.merge(msi_data,left_index=True,right_index=True)
 
