@@ -2,18 +2,19 @@ import os
 import pandas as pd
 import glob
 
-if os.path.isfile('input/selected.txt'):
-    file = open("input/selected.txt", "r")
-    samples = [line.rstrip() for line in file]
-else:
-    samples = glob_wildcards("input/{sample}/msi").sample
-if os.path.isfile('input/exclude.txt'):
-    file = open("input/exclude.txt", "r")
-    samples = list(set(samples).difference(set([line.rstrip() for line in file])))
-
 def summarize_folders(parent_folder,
                       verbose=True):
     summary = []
+
+    if os.path.isfile('input/selected.txt'):
+        file = open("input/selected.txt", "r")
+        samples = [line.rstrip() for line in file]
+    else:
+        samples = [x.replace('/msi', '').replace("\\","") for x in glob.glob('*/msi',root_dir='input')]
+    if os.path.isfile('input/exclude.txt'):
+        file = open("input/exclude.txt", "r")
+        samples = list(set(samples).difference(set([line.rstrip() for line in file])))
+    samples.sort()
     
     # Iterate through subdirectories
     for subdir in samples:
