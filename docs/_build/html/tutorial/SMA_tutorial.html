@@ -983,6 +983,67 @@ Complete log: .snakemake/log/2025-02-24T101307.169550.snakemake.log
 <p>For this dataset, we can see that because the MSI resolution is lower than for Visium, not every Visium spot has a corresponding MSI pixel. In other examples we see that multiple MSI pixels correspond to the same Visium spot.</p>
 <p>Due to the matching observations, metabolomics and transcriptomics measurements can then be directly correlated or used as input to multi-omics methods such as MOFA as demonstrated within our manuscript <em>Spatially resolved integrative analysis of transcriptomic and metabolomic changes
 in tissue injury studie</em>s</p>
+<p>For extra understanding, you can also find the Visium barcodes and the MSI pixels which are assigned to that barcode in <em>output/V11L12-038_D1/matched_Visium_MSI_IDs.csv</em></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">matched</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;output/V11L12-038_D1/matched_Visium_MSI_IDs.csv&#39;</span><span class="p">)</span>
+<span class="n">matched</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>visium_spot</th>
+      <th>MSI_spot</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>CGTCTCTCGCCGAGGC-1</td>
+      <td>MSI_V11L12-038_D1_pixel_14</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>AACCCGATAGGGCTTC-1</td>
+      <td>MSI_V11L12-038_D1_pixel_15</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>TGATGCTCACGTAGTC-1</td>
+      <td>MSI_V11L12-038_D1_pixel_16</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>CGGGCTACTTAAATTG-1</td>
+      <td>MSI_V11L12-038_D1_pixel_17</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>CTGAAACGGCCCTCAG-1</td>
+      <td>MSI_V11L12-038_D1_pixel_18</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
 </section>
 </section>
 </section>
@@ -1071,20 +1132,13 @@ in tissue injury studie</em>s</p>
   <div class="footer-item">
     
 <p class="component-author">
-By Lovisa Franzén
+By Eleanor C. Williams
 </p>
 
   </div>
   
   <div class="footer-item">
     
-
-  <p class="copyright">
-    
-      © Copyright 2023.
-      <br/>
-    
-  </p>
 
   </div>
   

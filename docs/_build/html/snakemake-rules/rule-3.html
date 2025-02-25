@@ -330,6 +330,7 @@
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input">Input</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output">Output</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-from-snakemake-file">Code (from Snakemake file)</a></li>
 </ul>
@@ -352,10 +353,19 @@
 <li><p>MSI in spaceranger style: <code class="docutils literal notranslate"><span class="pre">output/[sample]/spaceranger</span></code></p></li>
 </ul>
 </section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><em>agg_fn</em> allows the user to select how multiple MSI pixels corresponding to the same Visium barcode are aggregated (‘mean’ or ‘sum’)</p></li>
+<li><p><em>only_within_tissue</em> specifies whether Visium barcodes should be filtered for only those labelled as within the tissue by the Space Ranger pre-processing</p></li>
+<li><p><em>verbose</em> determines how much information about different stages of the process is delivered to the user</p></li>
+</ul>
+</section>
 <section id="output">
 <h2>Output<a class="headerlink" href="#output" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>MSI data matched with Visium spots in spaceranger style: <code class="docutils literal notranslate"><span class="pre">output/[sample]/spaceranger_meanIntensity</span></code></p></li>
+<li><p>MSI data matched with Visium spots in spaceranger style: <code class="docutils literal notranslate"><span class="pre">output/[sample]/spaceranger_aggregated</span></code></p></li>
+<li><p>Correspondence between MSI pixels and Visium spots <code class="docutils literal notranslate"><span class="pre">output/[sample]/matched_Visium_MSI_IDs.csv</span></code></p></li>
 </ul>
 </section>
 <section id="code-from-snakemake-file">
@@ -446,6 +456,7 @@
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#input">Input</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output">Output</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-from-snakemake-file">Code (from Snakemake file)</a></li>
 </ul>
@@ -462,20 +473,13 @@
   <div class="footer-item">
     
 <p class="component-author">
-By Lovisa Franzén
+By Eleanor C. Williams
 </p>
 
   </div>
   
   <div class="footer-item">
     
-
-  <p class="copyright">
-    
-      © Copyright 2023.
-      <br/>
-    
-  </p>
 
   </div>
   
