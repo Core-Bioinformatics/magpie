@@ -232,6 +232,7 @@ def server(input, output, session):
         clicked_coords_HE2HE_right.set([])
         
         msi_intensities = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_intensities.csv')
+        msi_intensities.set_index('spot_id', drop=True, inplace=True)
         msi_coords = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_metadata.csv')
         if input.flipx_dimred()==True:
             msi_coords['x']= (-msi_coords['x'])
