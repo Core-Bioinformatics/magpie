@@ -154,7 +154,6 @@ def create_mock_spaceranger_aggregated_intensity(
     
     visium_coords = pd.read_csv(visium_dir+"/spatial/tissue_positions_list.csv",header=None,index_col=0)
     msi_tissue_pos = visium_coords.loc[list(mean_intensity_table.index),:]
-    msi_tissue_pos[1]=1
 
     # Write tissue_positions.csv
     msi_tissue_pos.to_csv(os.path.join(spatial_path, "tissue_positions_list.csv"),index=True,header=False)
