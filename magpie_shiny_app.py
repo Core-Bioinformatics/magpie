@@ -36,6 +36,7 @@ app_ui = ui.page_fluid(
         ui.h3("Sample selection:"),  
         ui.output_text("show_samples"),
         ui.input_select("pick_sample", None, choices=[],width='400px'),
+        ui.output_text("show_peaks"),
         # Select dim reduction and run it
         ui.h3("Pick colouring for MSI data:"),
         ui.input_select("msi_colouring", None, choices=['PC1','First 3 PCs','Individual peak'],width='400px'),
@@ -204,13 +205,19 @@ def server(input, output, session):
             return('No MSI H&E image detected')
     
     # Update choices for dim reduction based on whether there's an MSI H&E
-    @reactive.event(input.pick_sample)
     def dimred_options():
         msi_intensities = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_intensities.csv')
         msi_intensities.set_index('spot_id', drop=True, inplace=True)
         ui.update_selectize("peak_choice", choices=list(msi_intensities.columns))
         ui.update_selectize("peak_choices", choices=list(msi_intensities.columns))
-        return msi_intensities
+        return list(msi_intensities.columns)
+    
+    @output
+    @render.text
+    def show_peaks():
+        peak_list = dimred_options()
+        display_string = "Found " + str(len(peak_list)) + " peaks in selected sample"
+        return(display_string)
 
 # Perform dimensionaly reduction
     @reactive.calc
@@ -224,7 +231,7 @@ def server(input, output, session):
         clicked_coords_HE2HE_left.set([])
         clicked_coords_HE2HE_right.set([])
         
-        msi_intensities = dimred_options()
+        msi_intensities = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_intensities.csv')
         msi_coords = pd.read_csv('input/'+input.pick_sample()+'/msi/MSI_metadata.csv')
         if input.flipx_dimred()==True:
             msi_coords['x']= (-msi_coords['x'])
@@ -261,7 +268,7 @@ def server(input, output, session):
             msi_coords['color']=reduction_colours_hex
 #            ax.scatter(x=msi_coords['x'], y=msi_coords['y'], c=reduction_colours_hex,marker='.',s=input.point_size())
         if input.msi_colouring() == 'Individual peak':
-            msi_coords['color'] = msi_intensities[input.peak_choice()]
+            msi_coords['color'] = list(msi_intensities[input.peak_choice()])
         return(msi_coords)
     
     @reactive.Effect
