@@ -1,0 +1,524 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Magpie shiny app for landmark selection &#8212; Magpie Pipeline Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'shiny-app/shiny-app';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Running the snakemake pipeline" href="../snakemake-rules/snakemake-pipeline.html" />
+    <link rel="prev" title="Pipeline Outputs" href="../results/results-summary.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/magpie_logo.png" class="logo__image only-light" alt="Magpie Pipeline Documentation - Home"/>
+    <img src="../_static/magpie_logo.png" class="logo__image only-dark pst-js-only" alt="Magpie Pipeline Documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../intro.html">
+                    MAGPIE Pipeline Documentation
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Intro</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../pipeline-overview.html">Pipeline Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../setup.html">Setup Instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs.html">MAGPIE directory structure</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Pipeline outputs</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../results/results-summary.html">Pipeline Outputs</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Individual pipeline steps</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Magpie shiny app for landmark selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snakemake-rules/snakemake-pipeline.html">Running the snakemake pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snakemake-rules/rule-1.html">Snakemake Rule 1: Transform coordinates to match between modalities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snakemake-rules/rule-2.html">Snakemake Rule 2: Create spaceranger object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../snakemake-rules/rule-3.html">Snakemake Rule 3: Match observations between modalities</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/SMA_tutorial.html">MAGPIE tutorial on SMA mouse brain sample</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/shiny-app/shiny-app.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Magpie shiny app for landmark selection</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-msi-data-image">1.	Create MSI data image</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#if-you-have-intermediate-msi-image">2.	If you have intermediate MSI image:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-find-landmarks-from-msi-data-image-to-msi-h-e">a.	Find landmarks from MSI data image to MSI H&amp;E</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-select-landmarks-from-msi-image-to-visium-h-e">b.	Select landmarks from MSI image to Visium H&amp;E</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#if-you-dont-have-intermediate-msi-image">3.	If you don’t have intermediate MSI image:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-select-landmarks-dimensionality-reduction-to-visium-h-e">a.	Select landmarks dimensionality reduction to Visium H&amp;E</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="magpie-shiny-app-for-landmark-selection">
+<h1>Magpie shiny app for landmark selection<a class="headerlink" href="#magpie-shiny-app-for-landmark-selection" title="Link to this heading">#</a></h1>
+<p>The magpie app provides a user-friendly interactive platform to select landmarks with which to perform coregistration. Once you have navigated to the correct working directory, described in [input structure page], you can start the app using</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>shiny<span class="w"> </span>run<span class="w"> </span>magpie_shiny_app.py
+</pre></div>
+</div>
+<p>You can then work through each sample in turn, following these steps:</p>
+<section id="create-msi-data-image">
+<h2>1.	Create MSI data image<a class="headerlink" href="#create-msi-data-image" title="Link to this heading">#</a></h2>
+<p>The first step in identifying landmarks is to create an image from the MSI data. This image should enable the identification of histological features which can be matched against H&amp;E images. The (x,y) coordinates of the sample are plotted out and coloured according to user selection. The MAGPIE pipeline offers several options on which data to colour each point, namely using the first principal component, using the first 3 components as RGB channels, and using the intensity of one peak. The dimensionality reduction can additionally be performed on all peaks (by default) or on a user-selected subset, e.g. on peaks related to a particular pathway.</p>
+<p><img alt="app_options" src="../_images/app_options.png" /></p>
+<p>As seen in the option box, to aid in coregistration, several transformations can also be made, including flips and rotations. If such alterations are performed these must be saved using the buttons provided so that the adjusted data is used for subsequent coregistration.</p>
+<p><img alt="app_options" src="../_images/app_makeadjustments.png" /></p>
+<p>When all these options have been selected, the MSI data image is created and displayed next to Visium H&amp;E image and MSI H&amp;E image if provided. The MSI data image can then be saved for later visualisation using the button provided.</p>
+</section>
+<section id="if-you-have-intermediate-msi-image">
+<h2>2.	If you have intermediate MSI image:<a class="headerlink" href="#if-you-have-intermediate-msi-image" title="Link to this heading">#</a></h2>
+<section id="a-find-landmarks-from-msi-data-image-to-msi-h-e">
+<h3>a.	Find landmarks from MSI data image to MSI H&amp;E<a class="headerlink" href="#a-find-landmarks-from-msi-data-image-to-msi-h-e" title="Link to this heading">#</a></h3>
+<p>If an intermediate MSI image has been provided, the MSI data image is shown next to the MSI image and users can identify landmarks by clicking on the shown images. Landmarks are matched between images by number, which are displayed below.</p>
+<p><img alt="app_options" src="../_images/app_landmarks_MSI2MSI.png" /></p>
+<p>Once the full set of landmarks has been identied, the table should be downloaded. The landmarks are automatically saved by the app into the required input structure for the MAGPIE snakemake pipeline.</p>
+<p><img alt="app_options" src="../_images/app_landmarks_download_MSI2MSI.png" /></p>
+</section>
+<section id="b-select-landmarks-from-msi-image-to-visium-h-e">
+<h3>b.	Select landmarks from MSI image to Visium H&amp;E<a class="headerlink" href="#b-select-landmarks-from-msi-image-to-visium-h-e" title="Link to this heading">#</a></h3>
+<p>Similarly to the previous step, the intermediate MSI image and the Visium H&amp;E image are shown and landmarks identified in the same way.</p>
+<p><img alt="app_options" src="../_images/app_landmarks_he2he.png" /></p>
+<p>Coregistration is then performed in a 2 step process, first projecting MSI datapoints onto the MSI H&amp;E image then subsequently onto the Visium H&amp;E image.</p>
+</section>
+</section>
+<section id="if-you-dont-have-intermediate-msi-image">
+<h2>3.	If you don’t have intermediate MSI image:<a class="headerlink" href="#if-you-dont-have-intermediate-msi-image" title="Link to this heading">#</a></h2>
+<section id="a-select-landmarks-dimensionality-reduction-to-visium-h-e">
+<h3>a.	Select landmarks dimensionality reduction to Visium H&amp;E<a class="headerlink" href="#a-select-landmarks-dimensionality-reduction-to-visium-h-e" title="Link to this heading">#</a></h3>
+<p>If don’t have an intermediate MSI image, coregistration will instead be performed directly between the MSI data image and the Visium H&amp;E, using the same process as above.</p>
+<p><img alt="app_options" src="../_images/app_landmarks_download_msi2he.png" /></p>
+<p>This whole process should be applied for each sample you wish to coregister. If you would prefer to use landmarks identified externally, for example using an automated tool like ELD, you can save these into the same structure, named:</p>
+<ul class="simple">
+<li><p>landmarks_MSI2HE.csv (from MSI data image to MSI H&amp;E)</p></li>
+<li><p>landmarks_HE2HE.csv (from MSI H&amp;E to Visium H&amp;E)
+or</p></li>
+<li><p>landmarks_noHE.csv (from MSI data image to Visium H&amp;E)</p></li>
+</ul>
+<p>In each case, the left two columns should be (x,y)-coordinates in the first image and the right (x,y)-coordinates in the second image.</p>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./shiny-app"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../results/results-summary.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Pipeline Outputs</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../snakemake-rules/snakemake-pipeline.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Running the snakemake pipeline</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-msi-data-image">1.	Create MSI data image</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#if-you-have-intermediate-msi-image">2.	If you have intermediate MSI image:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-find-landmarks-from-msi-data-image-to-msi-h-e">a.	Find landmarks from MSI data image to MSI H&amp;E</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#b-select-landmarks-from-msi-image-to-visium-h-e">b.	Select landmarks from MSI image to Visium H&amp;E</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#if-you-dont-have-intermediate-msi-image">3.	If you don’t have intermediate MSI image:</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-select-landmarks-dimensionality-reduction-to-visium-h-e">a.	Select landmarks dimensionality reduction to Visium H&amp;E</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Eleanor C. Williams
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
