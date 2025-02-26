@@ -59,3 +59,20 @@ The MAGPIE Conda environment can then be activated using
 ```bash
 conda activate magpie
 ```
+
+## 4. Copy the MAGPIE pipeline locally
+
+In order to run the MAGPIE pipeline, you need to have several files from the GitHub repository https://github.com/Core-Bioinformatics/magpie locally. Specifically you need the structure:
+
+    ├── Snakefile
+    ├── magpie_shiny_app.py
+    ├── figures  
+    │   ├── magpie_logo.png
+    ├── scripts
+    │   ├── alter_data.py
+    │   ├── create_mock_spaceranger.py
+    │   └── create_perbarcode_matrix.py
+
+You will then create a folder in the same directory called 'input' where all your inputs will be placed, following the structure specified in [the Input folder structure section](inputstructure). 
+
+In order to get these files locally, you can clone the reposity, either using git e.g. `git clone https://github.com/Core-Bioinformatics/magpie.git`, using the GitHub Desktop app by going to `File > Clone Repository...` or by downloading the whole repository as a zip file by going to the repository at https://github.com/Core-Bioinformatics/magpie then going to `Code > Download ZIP` then extracting the resulting folder locally.

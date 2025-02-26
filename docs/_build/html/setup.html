@@ -332,6 +332,7 @@
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-conda">1. Install Conda</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-conda-environment">2. Create Conda Environment</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#activate-environment">3. Activate Environment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copy-the-magpie-pipeline-locally">4. Copy the MAGPIE pipeline locally</a></li>
 </ul>
             </nav>
         </div>
@@ -397,6 +398,22 @@ bash<span class="w"> </span>~/Miniconda3-latest-Linux-x86_64.sh
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>magpie
 </pre></div>
 </div>
+</section>
+<section id="copy-the-magpie-pipeline-locally">
+<h2>4. Copy the MAGPIE pipeline locally<a class="headerlink" href="#copy-the-magpie-pipeline-locally" title="Link to this heading">#</a></h2>
+<p>In order to run the MAGPIE pipeline, you need to have several files from the GitHub repository <a class="github reference external" href="https://github.com/Core-Bioinformatics/magpie">Core-Bioinformatics/magpie</a> locally. Specifically you need the structure:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>├── Snakefile
+├── magpie_shiny_app.py
+├── figures  
+│   ├── magpie_logo.png
+├── scripts
+│   ├── alter_data.py
+│   ├── create_mock_spaceranger.py
+│   └── create_perbarcode_matrix.py
+</pre></div>
+</div>
+<p>You will then create a folder in the same directory called ‘input’ where all your inputs will be placed, following the structure specified in <a class="reference internal" href="inputs.html#inputstructure"><span class="std std-ref">the Input folder structure section</span></a>.</p>
+<p>In order to get these files locally, you can clone the reposity, either using git e.g. <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/Core-Bioinformatics/magpie.git</span></code>, using the GitHub Desktop app by going to <code class="docutils literal notranslate"><span class="pre">File</span> <span class="pre">&gt;</span> <span class="pre">Clone</span> <span class="pre">Repository...</span></code> or by downloading the whole repository as a zip file by going to the repository at <a class="github reference external" href="https://github.com/Core-Bioinformatics/magpie">Core-Bioinformatics/magpie</a> then going to <code class="docutils literal notranslate"><span class="pre">Code</span> <span class="pre">&gt;</span> <span class="pre">Download</span> <span class="pre">ZIP</span></code> then extracting the resulting folder locally.</p>
 </section>
 </section>
 
@@ -468,6 +485,7 @@ bash<span class="w"> </span>~/Miniconda3-latest-Linux-x86_64.sh
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-conda">1. Install Conda</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-conda-environment">2. Create Conda Environment</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#activate-environment">3. Activate Environment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copy-the-magpie-pipeline-locally">4. Copy the MAGPIE pipeline locally</a></li>
 </ul>
   </nav></div>
 
