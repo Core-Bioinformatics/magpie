@@ -24,7 +24,7 @@ msi_obj = Load10X_Spatial(paste0('output/',sample,'/spaceranger'))
 msi_obj = Load10X_Spatial(paste0('output/',sample,'/spaceranger_meanIntensity'))
 ```
 
-Using the semla toolkit, you can even create a multi-modal object directly. For this, either the Visium spot-matched MSI data can be used or the standard spaceranger-style MSI object can be collapsed into Visium spots by *semla* itself.
+Using the semla toolkit, you can even create a multi-modal object directly. For this, either the Visium spot-matched MSI data can be used or the standard spaceranger-style MSI object can be collapsed into Visium spots by *semla* itself using newly developed functionality available from v1.3.0.
 
 In the semla ecosystem for R:
 ```R
