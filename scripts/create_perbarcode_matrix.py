@@ -164,6 +164,7 @@ def create_mock_spaceranger_aggregated_intensity(
     # Write new scale factor JSON
     if verbose:
         print("Creating JSON file...")
+    msi_json["tissue_lowres_scalef"] = msi_json["tissue_hires_scalef"]
     with open(os.path.join(spatial_path, "scalefactors_json.json"), "w") as f:
         json.dump(msi_json, f, indent=4)
 
