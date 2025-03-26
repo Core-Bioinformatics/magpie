@@ -3,6 +3,13 @@
 <img src="figures/magpie_logo.png" width="200">
 </p>
 
+Recent developments in spatially resolved -omics have enabled studies linking gene expression and metabolite levels to tissue morphology, offering new insights into biological pathways. By capturing multiple modalities on matched tissue sections, one can better probe how different biological entities interact in a spatially coordinated manner. However, such cross-modality integration presents experimental and computational challenges. 
+To align multimodal datasets into a shared coordinate system and facilitate enhanced integration and analysis, we propose *MAGPIE* (Multi-modal Alignment of Genes and Peaks for Integrated Exploration), a framework for co-registering spatially resolved transcriptomics, metabolomics, and tissue morphology from the same or consecutive sections. 
+We illustrate the generalisability and scalability of *MAGPIE* on spatial multi-omics data from multiple tissues, combining Visium with both MALDI and DESI mass spectrometry imaging. *MAGPIE* was also applied to newly generated multimodal datasets created using specialised experimental sampling strategy to characterise the metabolic and transcriptomic landscape in an in vivo model of drug-induced pulmonary fibrosis, to showcase the linking of small-molecule co-detection with endogenous responses in lung tissue.
+*MAGPIE* highlights the refined resolution and increased interpretability of spatial multimodal analyses in studying tissue injury, particularly in pharmacological contexts, and offers a modular, accessible computational workflow for data integration.
+
+Preprint: https://www.biorxiv.org/content/10.1101/2025.02.26.640381v1
+
 ## Installation
 
 The MAGPIE pipeline requires a Python installation and the following package dependencies:
