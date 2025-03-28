@@ -38,6 +38,8 @@ The pipeline has been previously tested on the following systems:
 * macOS: Sequoia (15.3.2)
 * Windows: 11 (22H2)
 
+Installation should take up to ~10 minutes on a normal desktop computer.
+
 ## Input structure
 
 The MAGPIE pipeline automatically detects the files in your input folder and makes decisions accordingly so you must ensure your files follow the following structure:
@@ -74,3 +76,7 @@ For each sample you will be prompted to select some manual landmarks then downlo
 ## Running the snakemake pipeline
 
 Once landmarks have been selected for each sample, you can switch to the snakemake pipeline to perform the coregistration. Again you must be in the folder with all files in the _snakemake_ folder in this repository as well as an _input_ folder as described in the previous section with your newly selected landmarks. You can then run the pipeline using ``` snakemake --cores [n] ``` where _n_ is the number of cores you would like to use. You can explicitly state which samples you would like to use by listing them in a *selected.txt* file within the *input* folder and equivalently specify some files you would like to exclude using a *exclude.txt* file.
+
+## Tutorial
+
+We provide extensive [documentation describing the pipeline](https://core-bioinformatics.github.io/magpie/) and a tutorial with example data described [here](https://core-bioinformatics.github.io/magpie/tutorial/SMA_tutorial.html). The tutorial should take around 5-10 minutes to run. 
