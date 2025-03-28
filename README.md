@@ -34,6 +34,10 @@ We recommend to create a conda environment with from which the whole pipeline ca
 conda env create -f magpie_environment.yml
 ```
 
+The pipeline has been previously tested on the following systems:
+* macOS: Sequoia (15.3.2)
+* Windows: 11 (22H2)
+
 ## Input structure
 
 The MAGPIE pipeline automatically detects the files in your input folder and makes decisions accordingly so you must ensure your files follow the following structure:
