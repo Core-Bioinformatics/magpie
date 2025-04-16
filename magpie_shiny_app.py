@@ -530,8 +530,8 @@ def server(input, output, session):
         if input.rotate_dimred()==True:
             old_x = msi_coords['x']
             old_y = msi_coords['y']
-            msi_coords['x']= (old_x * math.cos(math.radians(input.rotate_dimred_angle()))) - (old_y * math.sin(math.radians(input.rotate_dimred_angle())))
-            msi_coords['y']= (old_x * math.sin(math.radians(input.rotate_dimred_angle()))) - (old_y * math.cos(math.radians(input.rotate_dimred_angle())))
+            msi_coords['x']= (old_x * math.cos(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.sin(math.radians(int(input.rotate_dimred_angle()))))
+            msi_coords['y']= (old_x * math.sin(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.cos(math.radians(int(input.rotate_dimred_angle()))))
 
         msi_coords.to_csv('input/'+input.pick_sample()+'/msi/MSI_metadata_modified.csv',index=False)
 
