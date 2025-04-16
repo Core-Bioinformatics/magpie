@@ -54,10 +54,10 @@ app_ui = ui.page_fluid(
         ui.panel_conditional("output.middleHE=='MSI H&E image detected'",
             ui.h3("Adjust MSI H&E image"),
             ui.input_checkbox("flipx_msihe", "Flip MSI H&E in x", False),
-            ui.input_checkbox("flipy_msihe", "Flip MSI H&E in y", False)),
+            ui.input_checkbox("flipy_msihe", "Flip MSI H&E in y", False),
             ui.input_checkbox("rotate_msihe", "Rotate MSI H&E", False),
             ui.panel_conditional("input.rotate_msihe",
-            ui.input_select("rotate_msihe_angle", "Angle to rotate MSI H&E", choices=[90,180,270])),
+            ui.input_select("rotate_msihe_angle", "Angle to rotate MSI H&E", choices=[90,180,270]))),
 
         ui.input_action_button("run_dimred", "Run dimensionality reduction"),
         class_="center-box"),
@@ -243,7 +243,7 @@ def server(input, output, session):
             old_x = msi_coords['x']
             old_y = msi_coords['y']
             msi_coords['x']= (old_x * math.cos(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.sin(math.radians(int(input.rotate_dimred_angle()))))
-            msi_coords['y']= (old_x * math.sin(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.cos(math.radians(int(input.rotate_dimred_angle()))))
+            msi_coords['y']= (old_x * math.sin(math.radians(int(input.rotate_dimred_angle())))) + (old_y * math.cos(math.radians(int(input.rotate_dimred_angle()))))
 
         if input.msi_colouring() == 'PC1':
             from sklearn.decomposition import PCA
@@ -531,7 +531,7 @@ def server(input, output, session):
             old_x = msi_coords['x']
             old_y = msi_coords['y']
             msi_coords['x']= (old_x * math.cos(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.sin(math.radians(int(input.rotate_dimred_angle()))))
-            msi_coords['y']= (old_x * math.sin(math.radians(int(input.rotate_dimred_angle())))) - (old_y * math.cos(math.radians(int(input.rotate_dimred_angle()))))
+            msi_coords['y']= (old_x * math.sin(math.radians(int(input.rotate_dimred_angle())))) + (old_y * math.cos(math.radians(int(input.rotate_dimred_angle()))))
 
         msi_coords.to_csv('input/'+input.pick_sample()+'/msi/MSI_metadata_modified.csv',index=False)
 
