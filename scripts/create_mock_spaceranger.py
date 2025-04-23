@@ -175,7 +175,6 @@ def create_mock_spaceranger(
     g1.create_dataset('indptr', data=msi_peaks_mtx_csr.indptr)
     g1.create_dataset('shape', data=msi_peaks_mtx.shape)
     g1.create_dataset('barcodes', data=msi_peaks_barcodes.tolist(), dtype=h5py.special_dtype(vlen=str))
-
     g2 = g1.create_group('features')
     g2.create_dataset('_all_tags_keys', data=['genome'] * len(msi_peaks_features["id1"]), dtype=h5py.special_dtype(vlen=str))
     g2.create_dataset('id', data=msi_peaks_features["id1"].tolist(), dtype=h5py.special_dtype(vlen=str))
