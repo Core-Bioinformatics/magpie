@@ -152,7 +152,11 @@ def create_mock_spaceranger_aggregated_intensity(
     if verbose:
         print("Copying Visium coordinates which map to some MSI pixels...")
     
-    visium_coords = pd.read_csv(visium_dir+"/spatial/tissue_positions_list.csv",header=None,index_col=0)
+    if os.path.isfile(visium_dir+'/spatial/tissue_positions.csv'):
+        visium_coords = pd.read_csv(visium_dir+'/spatial/tissue_positions.csv',index_col=0)
+    else :
+        visium_coords = pd.read_csv(visium_dir+'/visium/spatial/tissue_positions_list.csv',header=None,index_col=0)
+
     msi_tissue_pos = visium_coords.loc[list(mean_intensity_table.index),:]
 
     # Write tissue_positions.csv
