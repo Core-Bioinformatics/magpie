@@ -133,7 +133,7 @@ def map_coords_HE2HE(sample,
         tfm = AffineTransform()
         tfm.estimate(landmarks.iloc[:,:2],landmarks.iloc[:,2:4])
         msi_coords_tfm = pd.DataFrame(matrix_transform(
-            msi_coords[['x', 'y']],
+            msi_coords[[0,1]],
             tfm.params))
         tfm = AffineTransform()
         tfm.estimate(landmarks.iloc[:,2:4],landmarks.iloc[:,:2])
