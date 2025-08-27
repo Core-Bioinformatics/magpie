@@ -30,11 +30,23 @@ def estimate_interspot_distance(data):
 def group_msi_perspot(msi_obj,
                       visium_allcoords,
                       visium_index,
+                      scale_factors,
                       sample_name,
                       verbose = True):
 
     # get minimum distance between spots to find extended Visium radius
-    min_distance = estimate_interspot_distance(visium_allcoords)
+    if snakemake.params['radius_to_use'] == 'visium_expanded':
+        min_distance = estimate_interspot_distance(visium_allcoords)
+        print("Using maximum distance between spots and pixels: "+str(min_distance))
+    elif snakemake.params['radius_to_use'] == 'visium':
+        spot_diameter_px = scale_factors['spot_diameter_fullres']
+        min_distance = spot_diameter_px/2
+        print("Using maximum distance between spots and pixels: "+str(min_distance))
+    else:
+        spot_diameter_px = scale_factors['spot_diameter_fullres']
+        min_distance = np.max([estimate_interspot_distance(visium_allcoords),estimate_interspot_distance(msi_obj.obsm['spatial'])]) + spot_diameter_px/2
+ #       min_distance = spot_diameter_px/2
+        print("Using maximum distance between spots and pixels: "+str(min_distance))
     # find distance from all MSI pixels to all Visium spots
     if verbose:
         print("Calculating distances between MSI pixels and Visium spots...")
@@ -50,6 +62,7 @@ def group_msi_perspot(msi_obj,
     spot_distances_long.columns = ['distance']
     close_points = spot_distances_long[spot_distances_long['distance'] < min_distance].reset_index()
     close_points['MSI_spot'] = ['MSI_'+ sample_name + "_" +str(spot_id) for spot_id in close_points['MSI_spot']]
+    close_points.to_csv('output/'+sample_name+'/matched_coords.csv')
     matched_msi = close_points['MSI_spot'].nunique()
     matched_visium = close_points['visium_spot'].nunique()
     unmatched_visium = len(list(set([x for x in visium_index if x not in list(close_points['visium_spot'])])))
@@ -70,6 +83,7 @@ def group_mean(group):
 def create_mean_intensity_table(
         msi_obj,
         visium_allcoords,
+        scale_factors,
         sample_name = 'sample1',
         verbose = True):
 
@@ -89,6 +103,7 @@ def create_mean_intensity_table(
     close_points = group_msi_perspot(msi_obj,
                                      visium_allcoords,
                                      visium_allcoords.index,
+                                     scale_factors,
                                      sample_name,
                                      verbose = verbose)
     msi_data = msi_obj.X
@@ -100,16 +115,34 @@ def create_mean_intensity_table(
     close_points.iloc[:,:2].to_csv('output/'+sample_name+'/matched_Visium_MSI_IDs.csv', index=False)
     # get MSI intensities for all grouped points
     intensity_matrix = close_points.merge(msi_data,left_index=True,right_index=True)
-
     # group by Visium spot and take mean for each peak
     if verbose:
         print("Aggregating MSI pixels per Visium spot by "+snakemake.params['agg_fn']+"...")
     if snakemake.params['agg_fn'] == 'sum':
         intensity_matrix_mean = intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1).groupby(['visium_spot']).sum()
+    elif snakemake.params['agg_fn'] == 'weighted_average':
+        epsilon = 1e-6
+        intensity_matrix['raw_weight'] = 1 / (intensity_matrix['distance'] + epsilon)
+        intensity_matrix['weight'] = (
+            intensity_matrix
+            .groupby('visium_spot')['raw_weight']
+            .transform(lambda w: w / w.sum())
+        )
+        spot_id = intensity_matrix['visium_spot'].iloc[0]
+        weighted_intensities = intensity_matrix.drop(columns=['distance', 'raw_weight', 'MSI_spot']).copy()
+        peak_cols = [col for col in weighted_intensities.columns if col not in ['visium_spot', 'weight']]
+        weighted_intensities[peak_cols] = weighted_intensities[peak_cols].multiply(intensity_matrix['weight'], axis=0)
+        numerator = weighted_intensities.groupby('visium_spot').sum()
+        denominator = intensity_matrix.groupby('visium_spot')['weight'].sum()
+        intensity_matrix_mean = numerator.div(denominator, axis=0).drop(columns=['weight'])
+
     else :
         intensity_matrix_mean = intensity_matrix.drop(labels=['distance','MSI_spot'],axis=1).groupby(['visium_spot']).apply(lambda x: group_mean(x.values))
+
     
     intensity_matrix_mean_df = pd.DataFrame.from_dict(dict(zip(intensity_matrix_mean.index, intensity_matrix_mean.values))).transpose()
+    print(intensity_matrix_mean_df.iloc[:5,:5])
+    print(intensity_matrix_mean_df.shape)
     intensity_matrix_mean_df.columns = msi_obj.var['gene_ids']
 
     return(intensity_matrix_mean_df)
@@ -155,7 +188,7 @@ def create_mock_spaceranger_aggregated_intensity(
     if os.path.isfile(visium_dir+'/spatial/tissue_positions.csv'):
         visium_coords = pd.read_csv(visium_dir+'/spatial/tissue_positions.csv',index_col=0)
     else :
-        visium_coords = pd.read_csv(visium_dir+'/visium/spatial/tissue_positions_list.csv',header=None,index_col=0)
+        visium_coords = pd.read_csv(visium_dir+'/spatial/tissue_positions_list.csv',header=None,index_col=0)
 
     msi_tissue_pos = visium_coords.loc[list(mean_intensity_table.index),:]
 
@@ -245,14 +278,14 @@ def create_mock_spaceranger_aggregated_intensity(
     msi_peaks_mtx_csr = coo_array((msi_peaks_mtx_csr.data, (msi_peaks_mtx_csr.col, msi_peaks_mtx_csr.row)), shape=(msi_peaks_mtx_csr.shape[1],msi_peaks_mtx_csr.shape[0])).tocsr()
     hf = h5py.File(os.path.join(output_path, "filtered_feature_bc_matrix.h5"), 'w')
     g1 = hf.create_group('matrix')
-    g1.create_dataset('library_ids', data=["utf-8"], dtype=h5py.special_dtype(vlen=str))
+    g1.create_dataset('library_ids', data="utf-8",dtype=h5py.special_dtype(vlen=str))
     g1.create_dataset('data', data=msi_peaks_mtx_csr.data)
     g1.create_dataset('indices', data=msi_peaks_mtx_csr.indices)
     g1.create_dataset('indptr', data=msi_peaks_mtx_csr.indptr)
     g1.create_dataset('shape', data=msi_peaks_mtx.shape)
     g1.create_dataset('barcodes', data=msi_peaks_barcodes.tolist(),dtype=h5py.special_dtype(vlen=str))
     g2 = g1.create_group('features')
-    g2.create_dataset('_all_tag_keys', data=['genome'] * len(msi_peaks_features["id1"]), dtype=h5py.special_dtype(vlen=str))
+    g2.create_dataset('_all_tag_keys',data='genome',dtype=h5py.special_dtype(vlen=str))
     g2.create_dataset('id', data=msi_peaks_features["id1"].tolist(),dtype=h5py.special_dtype(vlen=str))
     g2.create_dataset('name', data=msi_peaks_features["id1"].tolist(),dtype=h5py.special_dtype(vlen=str))
     g2.create_dataset('feature_type', data=len(msi_peaks_features["id1"].tolist()) * ['Gene Expression'],dtype=h5py.special_dtype(vlen=str))
@@ -276,8 +309,13 @@ def main():
     if snakemake.params['only_within_tissue']:
         visium_allcoords = visium_allcoords[visium_allcoords['in_tissue']==1]
 
+    with open("input/"+sample+"/visium/spatial/scalefactors_json.json", "r") as f:
+        visium_json = json.load(f)
+        print(visium_json)
+
     mean_intensity = create_mean_intensity_table(msi_obj,
                                                  visium_allcoords.iloc[:,[4,3]],
+                                                 visium_json,
                                                  sample,
                                                  verbose = snakemake.params['verbose'])
     create_mock_spaceranger_aggregated_intensity(mean_intensity,
