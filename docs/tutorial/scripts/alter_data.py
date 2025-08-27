@@ -101,6 +101,7 @@ def map_coords_MSI2HE(sample,
     plt.imshow(out_image)
     plt.scatter(x=transformed_coords['x'],y=transformed_coords['y'],c=transformed_coords['color'],s=0.1,alpha=0.5)
     fig.savefig('output/' + sample +'/MSI_HE_withMSI2HECoords.png')
+    plt.close(fig)
 
     return msi_coords_tfm
 
@@ -207,6 +208,7 @@ def run_coreg(sample,
         plt.imshow(out_image)
         plt.scatter(x=transformed_coords['x'],y=transformed_coords['y'],s=0.1,c='r',alpha=0.7)
         fig.savefig('output/'+sample+'/transformed_withCoords.png')
+        plt.close(fig)
     else:
         visium_he_img = imread('input/'+sample+'/visium/spatial/tissue_hires_image.png')
         out_image = visium_he_img
@@ -217,9 +219,9 @@ def run_coreg(sample,
     # save Visium H&E image with transformed coordinates overlaid
     if verbose:
         print("Saving Visium H&E with new MSI coordinates overlaid...")
-    visium_he = imread('input/'+sample+'/visium/spatial/tissue_hires_image.png')
+    visium_he_img = imread('input/'+sample+'/visium/spatial/tissue_hires_image.png')
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    plt.imshow(visium_he)
+    plt.imshow(visium_he_img)
     plt.scatter(x=transformed_coords['x'],y=transformed_coords['y'],s=0.1,c='r',alpha=0.7)
     fig.savefig('output/'+sample+'/transformed_withCoords_VisiumHE.png')
 

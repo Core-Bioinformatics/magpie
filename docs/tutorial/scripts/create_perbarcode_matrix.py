@@ -141,8 +141,6 @@ def create_mean_intensity_table(
 
     
     intensity_matrix_mean_df = pd.DataFrame.from_dict(dict(zip(intensity_matrix_mean.index, intensity_matrix_mean.values))).transpose()
-    print(intensity_matrix_mean_df.iloc[:5,:5])
-    print(intensity_matrix_mean_df.shape)
     intensity_matrix_mean_df.columns = msi_obj.var['gene_ids']
 
     return(intensity_matrix_mean_df)
@@ -233,7 +231,7 @@ def create_mock_spaceranger_aggregated_intensity(
     if verbose:
         print("Preparing MSI peak data...")
     
-    msi_peaks_matrix = msi_peaks.transpose().copy()  # Select and transpose data
+    msi_peaks_matrix = msi_peaks.transpose()  # Select and transpose data
     msi_peaks_matrix.index = msi_peaks_features["id1"].tolist()  # Set row names
     msi_peaks_matrix.columns = msi_peaks_barcodes.tolist()  # Set column names
 
@@ -253,7 +251,7 @@ def create_mock_spaceranger_aggregated_intensity(
         compression="gzip",
         header=False
     )
-    pd.DataFrame({"barcodes": msi_peaks_barcodes}).to_csv(
+    msi_peaks_barcodes.to_frame(index=False).to_csv(
         os.path.join(filtered_path, "barcodes.tsv.gz"),
         sep="\t",
         index=False,
@@ -262,10 +260,8 @@ def create_mock_spaceranger_aggregated_intensity(
     )
 
     # Write matrix data (modify based on chosen sparse matrix format)
-    mmwrite(os.path.join(filtered_path, "matrix.mtx"),msi_peaks_mtx)
-
-    with open(os.path.join(filtered_path, "matrix.mtx"), 'rb') as src, gzip.open(os.path.join(filtered_path, "matrix.mtx.gz"), 'wb') as dst:
-        dst.writelines(src)
+    with gzip.open(os.path.join(filtered_path, "matrix.mtx.gz"), 'wb') as f:
+        mmwrite(f, msi_peaks_mtx)
 
     if verbose:
         print("Spaceranger 'filtered_feature_bc_matrix' folder content ready!")
@@ -311,7 +307,6 @@ def main():
 
     with open("input/"+sample+"/visium/spatial/scalefactors_json.json", "r") as f:
         visium_json = json.load(f)
-        print(visium_json)
 
     mean_intensity = create_mean_intensity_table(msi_obj,
                                                  visium_allcoords.iloc[:,[4,3]],
