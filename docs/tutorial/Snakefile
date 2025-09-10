@@ -75,6 +75,7 @@ rule create_barcode_matrix:
         "output/{sample}/spaceranger_aggregated/filtered_feature_bc_matrix.h5"
     params:
         sample = "{sample}",
+        radius_to_use = 'visium_expanded',
         agg_fn = 'mean',
         verbose = True,
         only_within_tissue = False

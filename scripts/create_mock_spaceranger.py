@@ -2,6 +2,8 @@ import os
 import json
 from collections import namedtuple
 from scipy.spatial.distance import pdist
+from scipy.spatial import cKDTree
+import numpy as np
 from scipy.sparse import csr_matrix, coo_array
 import pandas as pd
 import shutil
@@ -86,9 +88,12 @@ def create_mock_spaceranger(
 
     # Update spot diameter based on MSI center-to-center distance
     # Assuming pxl_row_in_fullres and pxl_col_in_fullres are spatial coordinates
-    distances = pdist(msi_tissue_pos[["pxl_row_in_fullres", "pxl_col_in_fullres"]])
-    c_c_dist = distances[distances > 0].min()
-    msi_json["spot_diameter_fullres"] = c_c_dist
+    coords = msi_tissue_pos[["pxl_row_in_fullres", "pxl_col_in_fullres"]].values
+    tree = cKDTree(coords)
+    dists, idxs = tree.query(coords, k=2)
+    min_dist = np.min(dists[:, 1])
+
+    msi_json["spot_diameter_fullres"] = min_dist
     msi_json["tissue_lowres_scalef"] = msi_json["tissue_hires_scalef"]
 
     # Write new scale factor JSON (if data available)
@@ -125,9 +130,9 @@ def create_mock_spaceranger(
     if verbose:
         print("Preparing MSI peak data...")
     
-    msi_peaks_matrix = msi_peaks.transpose().copy()  # Select and transpose data
-    msi_peaks_matrix.index = msi_peaks_features["id1"].tolist()  # Set row names
-    msi_peaks_matrix.columns = msi_peaks_barcodes.tolist()  # Set column names
+    msi_peaks_matrix = msi_peaks.transpose()  # Select and transpose data
+    msi_peaks_matrix.index = msi_peaks_features["id1"].values  # Set row names
+    msi_peaks_matrix.columns = msi_peaks_barcodes.values  # Set column names
 
     # Convert to sparse matrix (optional)
     # You might need to install `scikit-learn` for sparse matrix functionality
@@ -144,7 +149,7 @@ def create_mock_spaceranger(
         compression="gzip",
         header=False
     )
-    pd.DataFrame({"barcodes": msi_peaks_barcodes}).to_csv(
+    msi_peaks_barcodes.to_frame(index=False).to_csv(
         os.path.join(filtered_path, "barcodes.tsv.gz"),
         sep="\t",
         index=False,
@@ -153,10 +158,8 @@ def create_mock_spaceranger(
     )
 
     # Write matrix data (modify based on chosen sparse matrix format)
-    mmwrite(os.path.join(filtered_path, "matrix.mtx"),msi_peaks_mtx)
-
-    with open(os.path.join(filtered_path, "matrix.mtx"), 'rb') as src, gzip.open(os.path.join(filtered_path, "matrix.mtx.gz"), 'wb') as dst:
-        dst.writelines(src)
+    with gzip.open(os.path.join(filtered_path, "matrix.mtx.gz"), 'wb') as f:
+        mmwrite(f, msi_peaks_mtx)
 
     if verbose:
         print("Spaceranger 'filtered_feature_bc_matrix' folder content ready!")
