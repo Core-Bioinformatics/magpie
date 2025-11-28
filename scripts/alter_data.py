@@ -1,3 +1,18 @@
+"""
+Step 1 in MAGPIE pipeline: Mapping coordinates in MSI data to Visium.
+
+This script:
+1. Reads user-specified landmark pairs for MSI-> Visium or MSI -> MSI H&E and H&E -> Visium alignment.
+2. Applies either affine or thin-plate spline (TPS) transforms at each stage.
+3. Produces transformed MSI coordinates and optionally transforms MSI H&E images.
+4. Saves diagnostic plots to verify alignment quality.
+
+The pipeline is designed for use within Snakemake and expects the following folder structure:
+input/<sample>/msi/
+input/<sample>/visium/
+output/<sample>/
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from skimage.io import imread, imsave
@@ -16,6 +31,32 @@ from skimage.transform import (
 def map_coords_noHE(sample,
                     transform,
                     verbose=True):
+    
+    """
+    Map MSI coordinates directly to Visium H&E space *without* an MSI H&E image.
+
+    Parameters
+    ----------
+    sample : str
+        Sample ID used to locate input files under input/<sample>/.
+    transform : {'affine', 'TPS'}
+        The geometric transformation to apply based on landmark pairs.
+    verbose : bool
+        If True, print status messages during processing.
+
+    Returns
+    -------
+    dict
+        {
+            'transformed_coords': pd.DataFrame with transformed MSI coordinates,
+            'msi_he_image': None (returned for consistency with other options)
+        }
+
+    Notes
+    -----
+    This branch is used when no MSI H&E image is available. Only coordinate
+    mapping is performed; no image warping is done.
+    """
 
     if verbose:
         print("Mapping MSI data to Visium H&E")
@@ -51,6 +92,33 @@ def map_coords_MSI2HE(sample,
                       transform,
                       msi_he_img,
                       verbose=True):
+    
+    """
+    Map MSI pixel coordinates onto their corresponding MSI H&E image.
+
+    Parameters
+    ----------
+    sample : str
+        Sample ID used to locate MSI metadata and landmarks.
+    transform : {'affine', 'TPS'}
+        Transformation type inferred from MSI→MSI H&E landmark pairs.
+    msi_he_img : str or None
+        Path to MSI H&E image. A modified version is used if available.
+    verbose : bool
+        If True, print detailed progress messages.
+
+    Returns
+    -------
+    pd.DataFrame
+        Transformed MSI coordinates in MSI H&E space.
+
+    Notes
+    -----
+    This step forms the first stage of two-step MSI -> H&E -> Visium coregistration
+    when MSI H&E is available. A diagnostic plot with overlaid transformed
+    coordinates is saved to allow quality inspection.
+    """
+
     if verbose:
         print("Mapping MSI data to MSI H&E")
 
@@ -88,7 +156,12 @@ def map_coords_MSI2HE(sample,
     if verbose:
         print("Saving original MSI H&E with transformed MSI coordinates overlaid...")
     fig, ax = plt.subplots(nrows=1, ncols=1 )
-    out_image = imread(msi_he_img)
+    
+    if os.path.isfile('input/'+sample+'/msi/MSI_HE_modified.jpg'):
+        out_image = imread('input/'+sample+'/msi/MSI_HE_modified.jpg')
+    else:
+        out_image = imread(msi_he_img)
+
     transformed_coords = msi_coords_tfm.copy()
     transformed_coords.columns = ['x','y']
     transformed_coords['spot_id']=msi_coords['spot_id']
@@ -111,6 +184,35 @@ def map_coords_HE2HE(sample,
                      transform,
                      msi_he_img,
                      verbose=True):
+    
+    """
+    Map the MSI H&E image and MSI coordinates to the Visium H&E coordinate system.
+
+    Parameters
+    ----------
+    sample : str
+        Sample ID for locating landmark files and Visium images.
+    msi_coords : pd.DataFrame
+        MSI coordinates from the previous transformation stage.
+    transform : {'affine', 'TPS'}
+        Transformation type using MSI H&E → Visium H&E landmark pairs.
+    msi_he_img : str
+        Path to the MSI H&E image to be warped.
+    verbose : bool
+        If True, print status messages.
+
+    Returns
+    -------
+    dict
+        {
+            'transformed_coords': pd.DataFrame (MSI coords in Visium space),
+            'msi_he_image': 2D/3D ndarray (warped MSI H&E aligned to Visium)
+        }
+
+    Notes
+    -----
+    Output dimensions match the Visium H&E resolution.
+    """
 
     if verbose:
         print("Mapping MSI H&E to Visium H&E")
@@ -159,6 +261,19 @@ def map_coords_HE2HE(sample,
 def apply_mapping(sample,
                   msi_he_img,
                   verbose=True):
+    
+    """
+    Dispatch function selecting the correct mapping pipeline depending on
+    whether an MSI H&E image is present.
+
+    If MSI H&E exists:
+        1. MSI → MSI H&E transform
+        2. MSI H&E → Visium H&E transform
+    Else:
+        MSI → Visium H&E transform only
+
+    Returns a dict with transformed coordinates and (if available) warped MSI H&E.
+    """
 
     if not (msi_he_img is None):
         if verbose:
@@ -175,9 +290,32 @@ def run_coreg(sample,
               verbose=True):
 
     """
-    ### WRITE FULL DOCUMENTATION HERE!!!
-    Also add verbose mode options
+    Run the full MSI -> Visium coregistration pipeline on a given sample.
+
+    Steps
+    -----
+    1. Detect MSI H&E image (jpg/png/tiff) if available.
+    2. Apply appropriate mapping strategy (with or without MSI H&E).
+    3. Save:
+        - transformed coordinates (output/<sample>/transformed.csv)
+        - transformed image (either MSI H&E or Visium H&E)
+        - diagnostic images with overlaid coordinates
+
+    Parameters
+    ----------
+    sample : str
+        Sample name passed via Snakemake.
+    verbose : bool
+        If True, print progress and file-saving messages.
+
+    Notes
+    -----
+    The function expects Snakemake to provide parameters for:
+        snakemake.params['MSI2HE_transform']
+        snakemake.params['HE2HE_transform']
+        snakemake.params['no_HE_transform']
     """
+
     # check if there is any image file MSI_HE.jpg/tiff/png
     if glob.glob('input/'+sample+'/msi/MSI_HE.*') != []:
         msi_he_img = glob.glob('input/'+sample+'/msi/MSI_HE.*')
