@@ -3,12 +3,23 @@
 <img src="figures/magpie_logo.png" width="200">
 </p>
 
-Recent developments in spatially resolved -omics have enabled studies linking gene expression and metabolite levels to tissue morphology, offering new insights into biological pathways. By capturing multiple modalities on matched tissue sections, one can better probe how different biological entities interact in a spatially coordinated manner. However, such cross-modality integration presents experimental and computational challenges. 
-To align multimodal datasets into a shared coordinate system and facilitate enhanced integration and analysis, we propose *MAGPIE* (Multi-modal Alignment of Genes and Peaks for Integrated Exploration), a framework for co-registering spatially resolved transcriptomics, metabolomics, and tissue morphology from the same or consecutive sections. 
-We illustrate the generalisability and scalability of *MAGPIE* on spatial multi-omics data from multiple tissues, combining Visium with both MALDI and DESI mass spectrometry imaging. *MAGPIE* was also applied to newly generated multimodal datasets created using specialised experimental sampling strategy to characterise the metabolic and transcriptomic landscape in an in vivo model of drug-induced pulmonary fibrosis, to showcase the linking of small-molecule co-detection with endogenous responses in lung tissue.
-*MAGPIE* highlights the refined resolution and increased interpretability of spatial multimodal analyses in studying tissue injury, particularly in pharmacological contexts, and offers a modular, accessible computational workflow for data integration.
+Recent developments in spatially resolved -omics have enabled the joint study of gene expression, metabolite levels and tissue morphology, offering greater insights into biological pathways. 
+Integrating these modalities from matched tissue sections to probe spatially-coordinated processes, however, remains challenging. 
+Here we introduce _MAGPIE_, a framework for co-registering spatially resolved transcriptomics, metabolomics, and tissue morphology from the same or consecutive sections. 
+We show _MAGPIE_’s generalisability and scalability on spatial multi-omics data from multiple tissues, combining Visium with MALDI and DESI mass spectrometry imaging. 
+_MAGPIE_ was also applied to new multi-modal datasets generated with a specialised sampling strategy to characterise the metabolic and transcriptomic landscape in an in vivo model of drug-induced pulmonary fibrosis and to link small-molecule co-detection with endogenous lung responses. 
+_MAGPIE_ demonstrates the refined resolution and enhanced interpretability that spatial multi-modal analyses provide for studying tissue injury especially in pharmacological contexts, and delivers a modular, accessible workflow for data integration.
 
-Preprint: https://www.biorxiv.org/content/10.1101/2025.02.26.640381v1
+_MAGPIE_ has now been published in Nature Communications, please cite the following if you use our tool:
+
+> **Spatially resolved integrative analysis of transcriptomic and metabolomic changes in tissue injury studies.**  
+> Eleanor C. Williams, Lovisa Franzén, Martina Olsson Lindvall, Gregory Hamm, Steven Oag,
+> Muntasir Mamun Majumder, James Denholm, Azam Hamidinekoo, Javier Escudero Morlanes,
+> Marco Vicari, Joakim Lundeberg, Laura Setyo, Trevor M. Godfrey, Livia S. Eberlin,
+> Aleksandr Zakirov, Jorrit J. Hornberg, Marianna Stamou, Patrik L. Ståhl, Anna Ollerstam,
+> Jennifer Y. Tan, Irina Mohorianu.
+> _Nature Communications_, 17, Article 205. (2026)  
+> https://doi.org/10.1038/s41467-025-68003-w
 
 ## Installation
 
